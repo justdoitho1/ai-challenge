@@ -61,7 +61,7 @@ def model_train():
   history = model.fit(
     train_data, train_label, 
     validation_data=(validating_data, validating_label),
-    epochs=100,
+    epochs=60,
     batch_size=5000,
     verbose=1,
     callbacks=[early_stopping]
