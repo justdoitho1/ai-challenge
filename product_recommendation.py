@@ -120,8 +120,7 @@ product_name = {
 
 def predict():
   # input_data = "4인 가족이 사용할 제품을 추천해주세요. 나이는 30대 중반입니다. 렌탈료는 3만원 정도가 좋겠어요."
-  # 예시 문장 집합 (실제 사용시 제품 설명, 사용자 유형 등과 연결 필요)
-  # columns = ['나이', '가족 구성원', '렌탈비용', '용량', '만족도', '할인율', '제품코드']
+  # columns = ['나이', '가족 구성원', '렌탈비용', '용량', '만족도', '할인율', '설명']
   def model_predict(user_data):
     global model
     prediction = model.predict(user_data)
