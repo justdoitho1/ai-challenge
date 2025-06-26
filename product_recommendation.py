@@ -7,12 +7,25 @@ from tensorflow.keras.layers import Dense, BatchNormalization, Dropout
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
+import boto3
+import json
 
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
 model = None
-
+client = None
+access_key = ''
+secret_key = ''
+flow_identifier = ''
+flow_alias_identifier = ''
+with open('access_key.json', 'r') as f:
+  keys = json.load(f)
+  access_key = keys.get('access_key', '')
+  secret_key = keys.get('secret_key', '')
+  flow_identifier = keys.get('flow_identifier', '')
+  flow_alias_identifier = keys.get('flow_alias_identifier', '')
+  
 # 모델이 이미 존재하면 불러오고, 없으면 새로 학습한다.
 def model_train():
   global train_data, train_label, col_size, model, data_size
@@ -137,11 +150,43 @@ def predict():
   pred_idx = model_predict(user_data[:, 0:-1].astype(int))  # 마지막 열은 제외하고 예측
   for i, idx in enumerate(pred_idx):
     print("predict product {} : {}".format(user_data[i][-1], product_name[idx]))
+        
     
   
 if tf.io.gfile.exists('product_recommendation_model.h5'):
   model = keras.models.load_model('product_recommendation_model.h5')
-  predict()
+  # predict() # unit-test
+  while True:
+    question = input("질문을 입력하세요. 종료하고 싶으시면 exit를 입력하세요. : ")
+    if question.lower() == 'exit':
+      break
+    client = boto3.client(
+      service_name='bedrock-agent-runtime',
+      region_name='us-west-2',
+      aws_access_key_id=access_key, # user aws access key
+      aws_secret_access_key =secret_key # user aws secret key
+    )
+    response = client.invoke_flow(
+      flowIdentifier=flow_identifier,
+      flowAliasIdentifier=flow_alias_identifier,
+      inputs=[
+        {
+          "content": {
+            "document": question
+          },
+          "nodeName": "FlowInputNode",
+          "nodeOutputName": "document"
+        }
+      ]
+    )
+    
+    result = {}
+
+    for event in response.get("responseStream"):
+      result.update(event)
+    if result['flowCompletionEvent']['completionReason'] == 'SUCCESS':
+      print(result['flowOutputEvent']['content']['document'])
+      
 else:
   data = np.loadtxt('user_data.csv', delimiter=',', converters=int, dtype=int, encoding='UTF8')
   train_data = data[:, 0:-1].astype(int) # 마지막 열을 제외한 나머지 열이 사용자 데이터
