@@ -16,7 +16,10 @@ pip install pandas (2.3)
 그래프 시각화 도구
 pip install matplotlib
 
-배열 연산을 쉽게 해주는 라이브러리
+python으로 웹 프론트엔드를 제작
+pip install streamlit
+
+배열 연산을 빠르고 쉽게 해주는 라이브러리
 pip install numpy (1.23)
 
 AWS Bedrock 연결에 필요한 라이브러리
@@ -120,6 +123,10 @@ alias를 만들고 나면 prepared로 배포 준비가 완료되었고 이는 �
 
 
 발급받은 키와 flow 연결에 필요한 id들을 관리하기 위해 json 파일에 따로 저장해 두었습니다.
+
+![pic 13-1](https://github.com/user-attachments/assets/f1da1ca3-954f-4cf2-89a9-d106ed16c46f)
+
+
 이 값을 불러와 boto3 client에 적용하였습니다.
 
 ![pic 14](https://github.com/user-attachments/assets/f22dbd5a-c4b4-4e27-95c8-c57c38e57854)
