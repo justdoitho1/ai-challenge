@@ -119,25 +119,26 @@ member_type_reverse = {
 }
 
 product_name = {
-  0: [ '식기세척기 1', 0xFFFFFF, '싱글용', '4인분'],
-  1: [ '식기세척기 2', 0xFF0000, '싱글용', '3인분'],
-  2: [ '식기세척기 3', 0x00FF00, '4인가족용', '8인분'],
-  3: [ '식기세척기 4', 0x0000FF, '4인가족용', '6인분'],
-  4: [ '식기세척기 5', 0xF0F0F0, '4인가족용', '10인분'],
-  5: [ '식기세척기 6', 0xFF00F0, '4인가족용', '8인분'],
-  6: [ '식기세척기 7', 0xFF00F0, '4인가족용', '10인분'],
-  7: [ '식기세척기 8', 0xFFFFFF, '대가족용', '16인분'],
-  8: [ '식기세척기 9', 0xF0F0F0, '대가족용', '14인분'],
-  9: ['식기세척기 10', 0x00FF0F, '대가족용', '18인분'],
+  0: [ '식기세척기 1', 0xFFFFFF, '싱글용', '용량 : 4인분', '렌탈비용 : 23,000원'],
+  1: [ '식기세척기 2', 0xFF0000, '싱글용', '용량 : 3인분', '렌탈비용 : 21,000원'],
+  2: [ '식기세척기 3', 0x00FF00, '4인가족용', '용량 : 8인분', '렌탈비용 : 42,000원'],
+  3: [ '식기세척기 4', 0x0000FF, '4인가족용', '용량 : 6인분', '렌탈비용 : 38,000원'],
+  4: [ '식기세척기 5', 0xF0F0F0, '4인가족용', '용량 : 10인분', '렌탈비용 : 47,000원'],
+  5: [ '식기세척기 6', 0xFF00F0, '4인가족용', '용량 : 8인분', '렌탈비용 : 43,000원'],
+  6: [ '식기세척기 7', 0xFF00F0, '4인가족용', '용량 : 10인분', '렌탈비용 : 40,000원'],
+  7: [ '식기세척기 8', 0xFFFFFF, '대가족용', '용량 : 16인분', '렌탈비용 : 55,000원'],
+  8: [ '식기세척기 9', 0xF0F0F0, '대가족용', '용량 : 14인분', '렌탈비용 : 58,000원'],
+  9: ['식기세척기 10', 0x00FF0F, '대가족용', '용량 : 18인분', '렌탈비용 : 62,000원'],
 }
+def model_predict(user_data):
+  global model
+  prediction = model.predict(user_data)
+  return np.argmax(prediction, axis=1)
 
 def predict():
   # input_data = "4인 가족이 사용할 제품을 추천해주세요. 나이는 30대 중반입니다. 렌탈료는 3만원 정도가 좋겠어요."
   # columns = ['나이', '가족 구성원', '렌탈비용', '용량', '만족도', '할인율', '설명']
-  def model_predict(user_data):
-    global model
-    prediction = model.predict(user_data)
-    return np.argmax(prediction, axis=1)
+
   
   # 나이, 가족수, 렌탈비용, 용량, 만족도, 할인율
   user_data = np.array([
@@ -186,7 +187,42 @@ if tf.io.gfile.exists('product_recommendation_model.h5'):
       result.update(event)
     if result['flowCompletionEvent']['completionReason'] == 'SUCCESS':
       print(result['flowOutputEvent']['content']['document'])
-      
+    
+    '''
+    expect output format
+      ```json
+      {
+        "output_data": [
+          45,
+          7,
+          40,
+          14,
+          85,
+          7
+        ]
+      }
+      ```
+    '''
+    # parsing
+    res = result['flowOutputEvent']['content']['document'].replace('`', '').replace('json', '')
+    
+    # json 문자열을 실제 json 객체로 변환
+    try:
+      res_json = json.loads(res)
+      if 'output_data' in res_json:
+        output_data = res_json['output_data']
+        if len(output_data) == 6:
+          user_data = np.array([output_data])
+          pred_idx = model_predict(user_data.astype(int))
+          print("이 제품을 추천드려요 : {}".format(product_name[pred_idx[0]]))
+        else:
+          print("output_data의 길이가 올바르지 않습니다. 예상 길이: 6, 실제 길이: {}".format(len(output_data)))
+      else:
+        print("output_data 키가 JSON에 없습니다.")
+    except json.JSONDecodeError as e:
+      print("JSON 파싱 오류:", e)
+
+    
 else:
   data = np.loadtxt('user_data.csv', delimiter=',', converters=int, dtype=int, encoding='UTF8')
   train_data = data[:, 0:-1].astype(int) # 마지막 열을 제외한 나머지 열이 사용자 데이터
