@@ -120,6 +120,10 @@ alias를 만들고 나면 prepared로 배포 준비가 완료되었고 이는 �
 
 
 발급받은 키와 flow 연결에 필요한 id들을 관리하기 위해 json 파일에 따로 저장해 두었습니다.
+
+![pic 13-1](https://github.com/user-attachments/assets/f1da1ca3-954f-4cf2-89a9-d106ed16c46f)
+
+
 이 값을 불러와 boto3 client에 적용하였습니다.
 
 ![pic 14](https://github.com/user-attachments/assets/f22dbd5a-c4b4-4e27-95c8-c57c38e57854)
