@@ -16,7 +16,10 @@ pip install pandas (2.3)
 그래프 시각화 도구
 pip install matplotlib
 
-배열 연산을 쉽게 해주는 라이브러리
+python으로 웹 프론트엔드를 제작
+pip install streamlit
+
+배열 연산을 빠르고 쉽게 해주는 라이브러리
 pip install numpy (1.23)
 
 AWS Bedrock 연결에 필요한 라이브러리
