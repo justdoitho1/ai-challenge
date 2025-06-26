@@ -135,6 +135,11 @@ alias를 만들고 나면 prepared로 배포 준비가 완료되었고 이는 �
 ![pic 16](https://github.com/user-attachments/assets/3d0174af-03be-462a-9eaf-aeeaca215f95)
 
 
+이제 출력된 format을 json 데이터로 변경하고 model의 input shape와 동일하게 맞춰보고 출력 멘트도 변경했습니다.
+
+![image](https://github.com/user-attachments/assets/1a61baf4-7149-4d70-8c11-e24de95eb18a)
+
+
 aws 연결 관련 코드는 아래 docs를 참고하였습니다.
 
 <https://docs.aws.amazon.com/ko_kr/bedrock/latest/userguide/flows-code-ex.html>
