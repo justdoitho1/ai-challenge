@@ -1,9 +1,11 @@
 # ai-challenge
 
-필수 라이브러리 설치
 
-```
+## 개발 환경
 python version 3.9.0
+
+### Dependency
+```
 pip version(latest, 25.1.1)
 
 모델 학습에 필요한 라이브러리
