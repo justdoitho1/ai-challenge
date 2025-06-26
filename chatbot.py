@@ -1,12 +1,14 @@
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 import tensorflow as tf
 from tensorflow import keras
 import boto3
 import numpy as np
 import json
+import random
 model = None
 client = None
-import os
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+
 
 # -------------------------------------------------------------------------------------
 # aws key setting
@@ -98,6 +100,15 @@ if tf.io.gfile.exists('product_recommendation_model.h5'):
       if 'output_data' in res_json:
         output_data = res_json['output_data']
         if len(output_data) == 6:
+          # '나이', '가족 수', '렌탈비용(천원)', '용량', '만족도', '할인율'
+          if(output_data[0] is None or output_data[0] == 0):
+            output_data[0] = random.randint(23, 70)  # 나이
+          if(output_data[4] is None or output_data[4] == 0):
+            output_data[4] = random.randint(70, 95)
+          if(output_data[5] is None or output_data[5] == 0):
+            output_data[5] = random.randint(5, 10)
+            
+          print("output_data:", output_data)
           user_data = np.array([output_data])
           pred_idx = model_predict(user_data.astype(int))
           print("이 제품을 추천드려요 : {}".format(product_name[pred_idx[0]]))
