@@ -129,6 +129,11 @@ alias를 만들고 나면 prepared로 배포 준비가 완료되었고 이는 �
 
 ![pic 15](https://github.com/user-attachments/assets/36a48f8c-b7b4-434a-bea0-00f8450735db)
 
+어시스턴트를 이용해 필요 없는 결과를 제외하고 json 데이터만 표시해주도록 하였습니다.
+결과가 잘 출력되었습니다.
+
+![pic 16](https://github.com/user-attachments/assets/3d0174af-03be-462a-9eaf-aeeaca215f95)
+
 
 aws 연결 관련 코드는 아래 docs를 참고하였습니다.
 
