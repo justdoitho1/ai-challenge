@@ -24,7 +24,8 @@ pip install boto3
 
 ## concept
 
-![concept](https://github.com/user-attachments/assets/b227d62b-dca6-4b3f-a08c-9e2d53a289d8)
+![concept](https://github.com/user-attachments/assets/2e246de1-f22a-478b-b8ec-5b57f837b328)
+
 ```
 사용자의 제품 구매 데이터를 학습한 모델을 만들어 저장한다.
 
