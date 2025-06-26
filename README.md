@@ -38,7 +38,7 @@ pip install boto3
 
 질문자가 query를 던지면 AWS Bedrock에 등록된 프롬프트가 이를 해석해 모델에 들어가는 shape에 맞춰 벡터화합니다.
 
-변환된 vector data를 모델에 input 하면 추천 제품의 결과를 추천해줍니다.
+변환된 vector data를 모델에 input 하면 질문과 관련된 제품을 추천해줍니다.
 ```
 
 
