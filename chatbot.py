@@ -1,5 +1,6 @@
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+
 import tensorflow as tf
 from tensorflow import keras
 import boto3
@@ -22,6 +23,7 @@ with open('access_key.json', 'r') as f:
   secret_key = keys.get('secret_key', '')
   flow_identifier = keys.get('flow_identifier', '')
   flow_alias_identifier = keys.get('flow_alias_identifier', '')
+# -------------------------------------------------------------------------------------
 
 # predict  
 def model_predict(user_data):
