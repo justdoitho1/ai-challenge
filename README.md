@@ -56,6 +56,7 @@ batch size = 5000
 ```
 
 초기 세팅 시 epoch가 60에서 더이상 진전이 없다.
+정확도 또한 epoch 60에 1에 근접한 값으로 수렴하고 있다.
 
 ![train history](https://github.com/user-attachments/assets/f876ec55-b13d-4cb5-b102-dc518d7c295b)
 
