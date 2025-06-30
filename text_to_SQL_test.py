@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 import boto3 
 from botocore.config import Config
 import json
-
+import sqlite3
 
 # -------------------------------------------------------------------------------------
 # aws key setting
@@ -121,7 +121,7 @@ def get_user_prompt(question):
 
 print(sys_prompt[0]["text"])
 
-question = "20대 여성이 가장 많이 사용한 정수기는 뭐야?"
+question = "4인가족이 가장 많이 사용한 정수기는 뭐야?"
 user_prompt = get_user_prompt(question)
 print(user_prompt[0]["content"][0]["text"])
 
@@ -129,7 +129,12 @@ response = converse_with_bedrock(boto3_client, sys_prompt, user_prompt)
 sql_query = text(response)
 print(sql_query)
 
-# -------------------------------------------------------------------------------------
+conn = sqlite3.connect("aiChallenge.db")
+cur = conn.cursor()
+
+result = cur.execute(response).fetchall()
+print("SQL Query Result:"+str(result))
+#------------------------------------------------------------------------------------
 # boto3 client setting
 # 베드락 설정 
 # client = boto3.client(
@@ -139,7 +144,7 @@ print(sql_query)
 #     aws_secret_access_key=secret_key  # user aws secret key
 # )
 
-knowledge_base_id = 'YGWV6HE5SP'  # 베드락 지식 베이스 ID
+# knowledge_base_id = 'YGWV6HE5SP'  # 베드락 지식 베이스 ID
 #지식기반 ID 
 # model_arn = 'arn:aws:aoss:us-west-2:658995933138:collection/95pss5l0mz51e631c5g5'
 # user_question = '20대 여성이 가장 많이 사용한 정수기는 뭐야?'  # 사용자 질문
@@ -197,5 +202,5 @@ knowledge_base_id = 'YGWV6HE5SP'  # 베드락 지식 베이스 ID
 
 # 베드락 call --------------------------------------------------------------------------
 # response = converse_with_bedrock(client, test_sys_prompt, test_user_prompt)
-print(response['output']['text'])
+# print(response['output']['text'])
 # -------------------------------------------------------------------------------------
