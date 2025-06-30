@@ -1,0 +1,46 @@
+[
+    {
+    "customer" : {
+        "table_desc": "Stores customer data with unique ID. 고객 정보를 유니크 id와 함께 저장한다."
+    },
+    "cols": [
+    {
+      "name": "id",
+      "description": "primary key, unique identifier for the customer."
+    },
+    {
+      "name": "age",
+      "description": "사용자의 나이"
+    },
+    {
+      "name": "houseHold",
+      "description": "사용자의 가족구성원 수"
+    },
+    {
+      "name": "amt",
+      "description": "제품의 가격"
+    },
+    {
+      "name": "size",
+      "description": "제품의 용량."
+    },
+    {
+      "name": "score",
+      "description": "고객의 만족도. 0~100점까지 존재함"
+    },
+    {
+      "name": "discRate",
+      "description": "제품의 할인율"
+    },
+    {
+      "name": "prdtGrpCd",
+      "description": "제품군. prdtCd의 상위코드."
+    },
+    {
+      "name": "prdtCd",
+      "description": "prdtGrpCd의 하위코드로, 종속성이 있다. 제품코드, 제품"
+    }
+    ] ,
+            "table_summary": "사용자의 정보를 나타냄. "
+  }
+]

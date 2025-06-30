@@ -82,7 +82,6 @@ def get_schema_info(db_path):
     return schema_info
 
 schema = get_schema_info("aiChallenge.db")
-# print("테이블 스키마 : "+schema['customer'])
 
 dialect = "sqlite"
 top_k = 10
@@ -121,7 +120,10 @@ def get_user_prompt(question):
 
 print(sys_prompt[0]["text"])
 
-question = "4인가족이 가장 많이 사용한 정수기는 뭐야?"
+
+# -------------------------------------------------------------------------------------
+# 사용자 상호작용 
+question = input("질문을 입력하세요. 종료하고 싶으시면 exit를 입력하세요. : ")
 user_prompt = get_user_prompt(question)
 print(user_prompt[0]["content"][0]["text"])
 
@@ -129,78 +131,10 @@ response = converse_with_bedrock(boto3_client, sys_prompt, user_prompt)
 sql_query = text(response)
 print(sql_query)
 
+# -------------------------------------------------------------------------------------
+# 사용자가 입력한 쿼리를 DB에서 실행 후 결과 반환 
 conn = sqlite3.connect("aiChallenge.db")
 cur = conn.cursor()
 
 result = cur.execute(response).fetchall()
 print("SQL Query Result:"+str(result))
-#------------------------------------------------------------------------------------
-# boto3 client setting
-# 베드락 설정 
-# client = boto3.client(
-#     service_name='bedrock-agent-runtime',
-#     region_name='us-west-2',
-#     aws_access_key_id=access_key,  # user aws access key
-#     aws_secret_access_key=secret_key  # user aws secret key
-# )
-
-# knowledge_base_id = 'YGWV6HE5SP'  # 베드락 지식 베이스 ID
-#지식기반 ID 
-# model_arn = 'arn:aws:aoss:us-west-2:658995933138:collection/95pss5l0mz51e631c5g5'
-# user_question = '20대 여성이 가장 많이 사용한 정수기는 뭐야?'  # 사용자 질문
-
-# response = client.retrieve_and_generate(
-#    input={'text': user_question},
-#    retreive_and_generate_configuration={
-#       "type":"KNWLEDGE_BASE",
-#       "knowledgeBaseConfigurations": {
-#          "knowledgeBaseId": knowledge_base_id,
-#          "modelArn": model_arn,
-#          "generationConfiguration": {
-#             "promptTemplate": {
-#                "systemPrompt": '''You are an expert in SQL generation and structured data understanding.
-#                 Your task is to convert a user's natural language request into a valid SQL query for the `customer` table.
-#                 The `customer` table has the following columns (except `id`, which is auto-incremented):
-#                 - age: integer
-#                 - houseHold: integer (number of people in the household)
-#                 - amt: integer (rental fee in thousands of KRW)
-#                 - size: integer (capacity in liters)
-#                 - score: integer (satisfaction score from 0 to 100)
-#                 - discRate: integer (discount rate in percentage)
-#                 - prdtGrpCd: text (product group code, like "정수기")
-#                 - prdtCd: text (product code, like "정수기1")
-#                 Guidelines:
-#                 - If values like age are vague (e.g., "mid-30s"), estimate them (e.g., 35).
-#                 - If values are missing, use 0 for numbers and "" for text values.
-#                 - If the input describes a condition or query, generate a `SELECT` statement.
-#                 - If the input describes new data, generate an `INSERT` statement.
-#                 - Output only the SQL query. No explanations, comments, or formatting.
-#                 - Use standard SQLite syntax.''',
-#             },
-#          }
-#       }
-#    }
-# )
-
-# -------------------------------------------------------------------------------------
-# table names
-# inspector = inspect(engine)
-# table_names = inspector.get_table_names()
-# print("table_names:\n", table_names)
-
-# # simple query
-# with Session(engine) as session:
-#     result = session.execute(text("SELECT * FROM customer LIMIT 10"))
-#     print("\nrows:")
-#     for row in result:
-#         print(row)
-# -------------------------------------------------------------------------------------
-
-
-
-# -------------------------------------------------------------------------------------
-
-# 베드락 call --------------------------------------------------------------------------
-# response = converse_with_bedrock(client, test_sys_prompt, test_user_prompt)
-# print(response['output']['text'])
-# -------------------------------------------------------------------------------------
