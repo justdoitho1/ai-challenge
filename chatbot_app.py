@@ -1,5 +1,5 @@
 import streamlit as st #모든 streamlit 명령은 "st" 별칭을 통해 사용할 수 있습니다
-import test_chatbot as chat
+import chatbot as chat
 from PIL import Image # 이미지
 
 st.set_page_config(layout="wide") # UI 가독성이 좋게
