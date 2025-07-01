@@ -153,9 +153,14 @@ aws 연결 관련 코드는 아래 docs를 참고하였습니다.
 
 
 ## streamlit을 이용한 front-end 구성
+
+실행 명령어
+
 ```
-실행 명령어 : streamlit run chatbot_app.py
+streamlit run chatbot_app.py
 ```
+
+실행 결과
 
 ![pic 18](https://github.com/user-attachments/assets/47006046-b8f3-4573-b56d-8134a97189fd)
 
