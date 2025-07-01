@@ -7,3 +7,4 @@
 {"input": "식기세척기를 산 사람들의 수를 알려줘", "query": "SELECT COUNT(1) FROM CUSTOMER WHERE prdtGrpCd='''식기세척기'''"}
 {"input": "총 고객 수를 알려줘, "query": "SELECT COUNT(1) FROM CUSTOMER"}
 {"input": "20대가 가장 많이 산 제품군 알려줘, "query": "SELECT prdtGrpCd, count(1) as count from customer where age between 20 and 29 group by prdtGrpCd order by count desc limit 1"}
+{"input": "20대의 평균 만족도는 얼마야?" , "query":"select avg(score) from customer where age between 20 and 29"}

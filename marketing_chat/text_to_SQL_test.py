@@ -10,7 +10,7 @@ import sqlite3
 access_key = ''
 secret_key = ''
 try:
-    with open('access_key.json', 'r') as f:
+    with open('../access_key.json', 'r') as f:
         keys = json.load(f)
         access_key = keys.get('access_key', '')
         secret_key = keys.get('secret_key', '')
