@@ -9,12 +9,20 @@ import sqlite3
 # aws key setting
 access_key = ''
 secret_key = ''
+knowledge_base_id1 = ''
+region_name =''
+llm_model = ''
+model_arn = ''
+
 try:
     with open('../access_key.json', 'r') as f:
         keys = json.load(f)
         access_key = keys.get('access_key', '')
         secret_key = keys.get('secret_key', '')
-
+        knowledge_base_id1 = keys.get('knowledge_base_id1', '')
+        region_name =keys.get('region_name', '')
+        llm_model = keys.get('llm_model', '')
+        model_arn = keys.get('model_arn', '')
     if not access_key or not secret_key:
         raise ValueError("Access key or secret key is missing in access_key.json")
 
@@ -24,18 +32,10 @@ except json.JSONDecodeError:
     raise ValueError("access_key.json 파일의 형식이 잘못되었습니다. JSON 형식을 확인하세요.")
 # -------------------------------------------------------------------------------------
 
-# -------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------
 # AWS Bedrock 모델 초기화
 # boto3를 사용하여 AWS Bedrock 모델(anthropic.claude-3-5-haiku)에 접근합니다.
 # init_boto3_client 함수로 Bedrock 클라이언트를 초기화하고, converse_with_bedrock 함수로 모델과 대화합니다.
-boto_session = boto3.Session()
-region_name ='us-west-2'
-llm_model = "anthropic.claude-3-5-haiku-20241022-v1:0"
-knowledge_base_id = "YGWV6HE5SP"  # 생성된 KB ID
-model_arn = "arn:aws:bedrock:us-west-2::foundation-model/anthropic.claude-3-5-sonnet-20241022-v2:0" #소넷 
-
-# --------------------------------------------------------------------------------------
-# 베드락 초기화 함수 
 def init_boto3_client(region: str):
     if not access_key or not secret_key:
         raise ValueError("AWS 자격 증명이 설정되지 않았습니다.")
@@ -61,11 +61,11 @@ def converse_with_bedrock_kb(boto3_client, sys_prompt, usr_prompt):
     top_p = 0.1
     inference_config = {"temperature": temperature, "topP": top_p}
     response = boto3_client.retrieve_and_generate(
-    input= {"text": user_prompt[0]["content"][0]["text"]+ "\nSkip the preamble and provide only the SQL."},
+    input= {"text": sys_prompt[0]["text"] + user_prompt[0]["content"][0]["text"]+ "\nSkip the preamble and provide only the SQL."},
      retrieveAndGenerateConfiguration={
         "type": "KNOWLEDGE_BASE",  
         "knowledgeBaseConfiguration": {
-            "knowledgeBaseId": knowledge_base_id,
+            "knowledgeBaseId": knowledge_base_id1, # 지식기반 woongdalsam 
             "modelArn": model_arn, 
         }
     }
@@ -138,7 +138,6 @@ Only use the following tables:
 """ 
 }]
 
-
 # 유저 프롬프트 return하는 함수 
 def get_user_prompt(question):
     return [{
@@ -149,7 +148,7 @@ def get_user_prompt(question):
     }]
 
 
-print(sys_prompt[0]["text"])
+
 
 
 # -------------------------------------------------------------------------------------
