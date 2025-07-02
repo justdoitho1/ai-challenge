@@ -25,6 +25,9 @@ pip install numpy==1.23
 
 AWS Bedrock 연결에 필요한 라이브러리
 pip install boto3
+
+DB 연결 및 SQL 실행에 필요한 라이브러리
+pip install sqlalchemy==2.0.41
 ```
 
 ## 어플리케이션 주요 기능
@@ -153,16 +156,16 @@ streamlit run chatbot_app.py
 
 ## marketing chat local 구동 시 checklist
 
-1. 필요 extension 없음
-2. 25.07.01 14시 version access_key.json 세팅 필요
-3. marketing_chatbot 에서 python marketing_chatbot.py 명령어 실행
+1. 25.07.01 14시 version access_key.json 세팅 필요
+2. marketing_chatbot_toText 에서 python marketing_chatbot_toText.py 명령어 실행
    => 질문 입력 시 SQL과 함께 DB 조회 결과 출력됨
-4. db 없다고 나올 경우 db_config.py 파일 실행 => db 생성 및 insert까지 실행됨
+3. db 없다고 나올 경우 db_config.py 파일 실행 => db 생성 및 insert까지 실행됨
+4. sqlalchemy install 2.0.41 설치필요
 
 # marketing_chat directory document
 
 1. aiChallenge.db : sqlite db
 2. customer_sample_queries.txt : 지식기반에 넣을 쿼리샘플 (누구나 추가 가능)
 3. db_config.py : sqlite db를 생성하고 데이터를 insert 함
-4. marketing_chatbot : 실제 챗봇 구현 쿼리
+4. marketing_chatbot_toText : 실제 챗봇 구현 쿼리 / 자연어 결과까지 포함
 5. sqlite.sql : 실행 가능한 sql 저장소
