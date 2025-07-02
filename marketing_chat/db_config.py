@@ -1,7 +1,4 @@
 import sqlite3
-import boto3
-from botocore.config import Config
-
 
 # DB 연결 (없으면 생성됨)
 conn = sqlite3.connect("aiChallenge.db")

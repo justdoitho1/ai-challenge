@@ -8,3 +8,153 @@
 {"input": "총 고객 수를 알려줘, "query": "SELECT COUNT(1) FROM CUSTOMER"}
 {"input": "20대가 가장 많이 산 제품군 알려줘, "query": "SELECT prdtGrpCd, count(1) as count from customer where age between 20 and 29 group by prdtGrpCd order by count desc limit 1"}
 {"input": "20대의 평균 만족도는 얼마야?" , "query":"select avg(score) from customer where age between 20 and 29"}
+{"input": "모든 고객 정보를 모두 가져와.", "query": "SELECT * FROM customer"},
+{"input": "모든 사용자 정보를 모두 가져와줘.", "query": "SELECT * FROM customer"},
+{"input": "20대가 가장 많이 산 제품을 알려줘.", "query": "SELECT prdtCd, count(1) as count FROM customer WHERE age BETWEEN 20 AND 29 GROUP BY prdtCd ORDER BY count DESC LIMIT 1"},
+{"input": "20대가 가장 선호하는 제품을 알려줘.", "query": "SELECT prdtCd, count(1) as count FROM customer WHERE age BETWEEN 20 AND 29 GROUP BY prdtCd ORDER BY count DESC LIMIT 1"},
+{"input": "식기세척기를 가장 많이 산 연령대를 알려줘", "query": "SELECT CAST(age / 10 AS INT) * 10 AS age_group, COUNT(1) AS cnt FROM customer WHERE prdtGrpCd = '식기세척기' GROUP BY age_group ORDER BY cnt DESC LIMIT 1"},
+{"input": "식기세척기1 제품을 산 사람들의 수를 알려줘", "query": "SELECT COUNT(1) FROM customer WHERE prdtCd = '식기세척기1'"},
+{"input": "식기세척기를 산 사람들의 수를 알려줘", "query": "SELECT COUNT(1) FROM customer WHERE prdtGrpCd = '식기세척기'"},
+{"input": "총 고객 수를 알려줘", "query": "SELECT COUNT(1) FROM customer"},
+{"input": "20대가 가장 많이 산 제품군 알려줘", "query": "SELECT prdtGrpCd, count(1) as count FROM customer WHERE age BETWEEN 20 AND 29 GROUP BY prdtGrpCd ORDER BY count DESC LIMIT 1"},
+{"input": "20대의 평균 만족도는 얼마야?", "query": "SELECT AVG(score) FROM customer WHERE age BETWEEN 20 AND 29"},
+{"input": "30대 고객의 평균 렌탈비를 알려줘", "query": "SELECT AVG(amt) FROM customer WHERE age BETWEEN 30 AND 39"},
+{"input": "가장 만족도가 높은 제품 코드는?", "query": "SELECT prdtCd FROM customer ORDER BY score DESC LIMIT 1"},
+{"input": "가장 많이 팔린 제품군은?", "query": "SELECT prdtGrpCd, COUNT(1) as cnt FROM customer GROUP BY prdtGrpCd ORDER BY cnt DESC LIMIT 1"},
+{"input": "할인을 받은 고객들의 평균 만족도는?", "query": "SELECT AVG(score) FROM customer WHERE discRate > 0"},
+{"input": "30대 중에 렌탈비가 가장 높은 사람을 알려줘.", "query": "SELECT * FROM customer WHERE age BETWEEN 30 AND 39 ORDER BY amt DESC LIMIT 1"},
+{"input": "40대 중에 만족도가 가장 낮은 고객을 알려줘.", "query": "SELECT * FROM customer WHERE age BETWEEN 40 AND 49 ORDER BY score ASC LIMIT 1"},
+{"input": "가족 수가 4명인 고객들의 평균 할인율이 궁금해.", "query": "SELECT AVG(discRate) FROM customer WHERE houseHold = 4"},
+{"input": "가장 만족도가 높은 고객의 정보를 보여줘.", "query": "SELECT * FROM customer ORDER BY score DESC LIMIT 1"},
+{"input": "평균 용량이 20 이상인 제품을 구매한 사람 수는?", "query": "SELECT COUNT(*) FROM customer WHERE size >= 20"},
+{"input": "20대 고객 수가 몇 명이야?", "query": "SELECT COUNT(*) FROM customer WHERE age BETWEEN 20 AND 29"},
+{"input": "가족 수가 5명 이상인 고객이 산 제품군을 알려줘.", "query": "SELECT DISTINCT prdtGrpCd FROM customer WHERE houseHold >= 5"},
+{"input": "제품 코드 LG1001을 구매한 고객 수는?", "query": "SELECT COUNT(*) FROM customer WHERE prdtCd = 'LG1001'"},
+{"input": "평균 만족도가 80 이상인 제품군만 보여줘.", "query": "SELECT prdtGrpCd FROM customer GROUP BY prdtGrpCd HAVING AVG(score) >= 80"},
+{"input": "렌탈비 3만 원 이하인 고객들만 보여줘.", "query": "SELECT * FROM customer WHERE amt <= 30"},
+{"input": "가장 많이 팔린 제품 코드는?", "query": "SELECT prdtCd, COUNT(*) AS count FROM customer GROUP BY prdtCd ORDER BY count DESC LIMIT 1"},
+{"input": "할인을 한 번도 안 받은 고객 수는?", "query": "SELECT COUNT(*) FROM customer WHERE discRate = 0"},
+{"input": "모든 고객 정보를 제품코드로 정렬해 보여줘.", "query": "SELECT * FROM customer ORDER BY prdtCd ASC"},
+{"input": "식기세척기를 구매한 사람들의 연령대 비중 통계를 보여줘", "query": "SELECT CAST(age / 10 AS INT) * 10 AS age_group, COUNT(*) * 100.0 / (SELECT COUNT(*) FROM customer WHERE prdtGrpCd = '식기세척기') AS percentage FROM customer WHERE prdtGrpCd = '식기세척기' GROUP BY age_group ORDER BY age_group"},
+{"input": "할인을 많이 받은 고객 순으로 보여줘", "query": "SELECT * FROM customer ORDER BY discRate DESC"},
+{"input": "만족도가 70점 이하인 고객들을 보여줘", "query": "SELECT * FROM customer WHERE score <= 70"}
+  {
+        "input": "정수기1을 산 사람의 연령대별 비중을 알려줘",
+        "query": "SELECT CAST(age / 10 AS INT) * 10 AS age_group, COUNT(*) * 100.0 / (SELECT COUNT(*) FROM customer WHERE prdtCd = '정수기1') AS percentage FROM customer WHERE prdtCd = '정수기1' GROUP BY age_group ORDER BY age_group"
+    },
+    {
+        "input": "식기세척기를 산 고객의 평균 만족도를 알려줘",
+        "query": "SELECT AVG(score) FROM customer WHERE prdtGrpCd = '식기세척기'"
+    },
+    {
+        "input": "렌탈비가 가장 높은 연령대는 어디야?",
+        "query": "SELECT CAST(age / 10 AS INT) * 10 AS age_group, AVG(amt) as avg_amt FROM customer GROUP BY age_group ORDER BY avg_amt DESC LIMIT 1"
+    },
+    {
+        "input": "제품 그룹별 평균 만족도를 알려줘",
+        "query": "SELECT prdtGrpCd, AVG(score) as avg_score FROM customer GROUP BY prdtGrpCd ORDER BY avg_score DESC"
+    },
+    {
+        "input": "할인을 가장 많이 받은 연령대는?",
+        "query": "SELECT CAST(age / 10 AS INT) * 10 AS age_group, AVG(discRate) as avg_disc FROM customer GROUP BY age_group ORDER BY avg_disc DESC LIMIT 1"
+    },
+    {
+        "input": "정수기를 구매한 고객 중 가장 많은 연령대는?",
+        "query": "SELECT CAST(age / 10 AS INT) * 10 AS age_group, COUNT(*) as cnt FROM customer WHERE prdtGrpCd = '정수기' GROUP BY age_group ORDER BY cnt DESC LIMIT 1"
+    },
+    {
+        "input": "가장 높은 평균 렌탈비를 기록한 제품 그룹은?",
+        "query": "SELECT prdtGrpCd, AVG(amt) as avg_amt FROM customer GROUP BY prdtGrpCd ORDER BY avg_amt DESC LIMIT 1"
+    },
+    {
+        "input": "제품 코드별 평균 만족도 순위를 보여줘",
+        "query": "SELECT prdtCd, AVG(score) as avg_score FROM customer GROUP BY prdtCd ORDER BY avg_score DESC"
+    },
+    {
+        "input": "가족 수가 많은 고객들이 선호하는 제품 그룹은?",
+        "query": "SELECT prdtGrpCd, COUNT(*) as cnt FROM customer WHERE houseHold >= 4 GROUP BY prdtGrpCd ORDER BY cnt DESC LIMIT 1"
+    },
+    {
+        "input": "연령대별 평균 만족도를 보여줘",
+        "query": "SELECT CAST(age / 10 AS INT) * 10 AS age_group, AVG(score) as avg_score FROM customer GROUP BY age_group ORDER BY age_group"
+    },
+    {
+        "input": "렌탈비 평균이 가장 낮은 제품 코드는?",
+        "query": "SELECT prdtCd, AVG(amt) as avg_amt FROM customer GROUP BY prdtCd ORDER BY avg_amt ASC LIMIT 1"
+    },
+    {
+        "input": "정수기를 산 사람 중 만족도가 80 이상인 비율은?",
+        "query": "SELECT COUNT(*) * 100.0 / (SELECT COUNT(*) FROM customer WHERE prdtGrpCd = '정수기') FROM customer WHERE prdtGrpCd = '정수기' AND score >= 80"
+    },
+    {
+        "input": "연령대별 제품 구매 수를 알려줘",
+        "query": "SELECT CAST(age / 10 AS INT) * 10 AS age_group, COUNT(*) as count FROM customer GROUP BY age_group ORDER BY age_group"
+    },
+    {
+        "input": "제품 그룹별 평균 할인율을 알려줘",
+        "query": "SELECT prdtGrpCd, AVG(discRate) as avg_discount FROM customer GROUP BY prdtGrpCd"
+    },
+    {
+        "input": "제품 코드별 구매 비중을 알려줘",
+        "query": "SELECT prdtCd, COUNT(*) * 100.0 / (SELECT COUNT(*) FROM customer) AS percentage FROM customer GROUP BY prdtCd ORDER BY percentage DESC"
+    },
+    {
+        "input": "전체 고객 중 30대 비중은 얼마야?",
+        "query": "SELECT COUNT(*) * 100.0 / (SELECT COUNT(*) FROM customer) FROM customer WHERE age BETWEEN 30 AND 39"
+    },
+    {
+        "input": "평균 용량이 가장 큰 제품 그룹은?",
+        "query": "SELECT prdtGrpCd, AVG(size) as avg_size FROM customer GROUP BY prdtGrpCd ORDER BY avg_size DESC LIMIT 1"
+    },
+    {
+        "input": "가족 수가 가장 많은 고객의 제품 코드를 알려줘",
+        "query": "SELECT prdtCd FROM customer ORDER BY houseHold DESC LIMIT 1"
+    },
+    {
+        "input": "제품 그룹별 구매 고객 수를 알려줘",
+        "query": "SELECT prdtGrpCd, COUNT(*) as cnt FROM customer GROUP BY prdtGrpCd ORDER BY cnt DESC"
+    },
+    {
+        "input": "연령대별 평균 할인율은 어떻게 돼?",
+        "query": "SELECT CAST(age / 10 AS INT) * 10 AS age_group, AVG(discRate) FROM customer GROUP BY age_group"
+    },
+    {
+        "input": "제품 그룹별 고객 수 비중을 알려줘",
+        "query": "SELECT prdtGrpCd, COUNT(*) * 100.0 / (SELECT COUNT(*) FROM customer) as ratio FROM customer GROUP BY prdtGrpCd ORDER BY ratio DESC"
+    },
+    {
+        "input": "렌탈비 3만원 이상 고객 비율은?",
+        "query": "SELECT COUNT(*) * 100.0 / (SELECT COUNT(*) FROM customer) FROM customer WHERE amt >= 30"
+    },
+    {
+        "input": "30대 고객 중 제품 만족도가 가장 높은 제품 코드는?",
+        "query": "SELECT prdtCd FROM customer WHERE age BETWEEN 30 AND 39 ORDER BY score DESC LIMIT 1"
+    },
+    {
+        "input": "정수기 중 평균 할인율이 가장 높은 제품 코드는?",
+        "query": "SELECT prdtCd, AVG(discRate) FROM customer WHERE prdtGrpCd = '정수기' GROUP BY prdtCd ORDER BY AVG(discRate) DESC LIMIT 1"
+    },
+    {
+        "input": "연령대별 평균 렌탈비를 알려줘",
+        "query": "SELECT CAST(age / 10 AS INT) * 10 AS age_group, AVG(amt) FROM customer GROUP BY age_group ORDER BY age_group"
+    },
+    {
+        "input": "정수기를 산 고객 중 용량 평균이 가장 큰 연령대는?",
+        "query": "SELECT CAST(age / 10 AS INT) * 10 AS age_group, AVG(size) as avg_size FROM customer WHERE prdtGrpCd = '정수기' GROUP BY age_group ORDER BY avg_size DESC LIMIT 1"
+    },
+    {
+        "input": "제품 코드별 만족도 편차(표준편차)를 알려줘",
+        "query": "SELECT prdtCd, AVG((score - (SELECT AVG(score) FROM customer)) * (score - (SELECT AVG(score) FROM customer))) as variance FROM customer GROUP BY prdtCd"
+    },
+    {
+        "input": "연령대별 렌탈비 편차를 알려줘",
+        "query": "SELECT CAST(age / 10 AS INT) * 10 AS age_group, AVG((amt - (SELECT AVG(amt) FROM customer)) * (amt - (SELECT AVG(amt) FROM customer))) as variance FROM customer GROUP BY age_group"
+    },
+    {
+        "input": "평균 할인율이 가장 낮은 제품 그룹은?",
+        "query": "SELECT prdtGrpCd, AVG(discRate) FROM customer GROUP BY prdtGrpCd ORDER BY AVG(discRate) ASC LIMIT 1"
+    },
+    {
+        "input": "정수기를 산 사람들의 연령대별 만족도 평균을 알려줘",
+        "query": "SELECT CAST(age / 10 AS INT) * 10 AS age_group, AVG(score) FROM customer WHERE prdtGrpCd = '정수기' GROUP BY age_group"
+    }
