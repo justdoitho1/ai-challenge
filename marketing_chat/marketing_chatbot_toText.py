@@ -1,9 +1,13 @@
 from sqlalchemy import create_engine, text, inspect
 from sqlalchemy.orm import Session
+import sqlalchemy
 import boto3 
 from botocore.config import Config
 import json
 import sqlite3
+import matplotlib.pyplot as plt
+import matplotlib.font_manager as fm
+import io
 
 # -------------------------------------------------------------------------------------
 # aws key setting
@@ -123,6 +127,13 @@ def get_schema_info(db_path):
     return schema_info
 
 schema = get_schema_info("aiChallenge.db")
+
+# -------------------------------------------------------------------------------------
+# 이미지 폰트 경로 설정
+font_path = './NanumBarunGothic.ttf'
+font_name = fm.FontProperties(fname=font_path).get_name()
+plt.rc('font', family=font_name)
+
 # -------------------------------------------------------------------------------------
 # PROMPT
 # -------------------------------------------------------------------------------------
@@ -193,13 +204,64 @@ print(sql_query)
 conn = sqlite3.connect("aiChallenge.db")
 cur = conn.cursor()
 
-result = cur.execute(sql_query).fetchall()
-print("SQL Query Result:"+str(result))
+query_result = cur.execute(sql_query).fetchall()
+print("SQL Query Result:"+str(query_result))
 
 # sql_query,result 을 기반으로 자연어 응답 생성
 # 1.get sqlToText prompt
-prompt_text = sqlToText_prompt(sql_query, result)
+prompt_text = sqlToText_prompt(sql_query, query_result)
 # 2.자연어 prompt & 지식기반 활용하여 응답값 반환
 natural_answer = natural_answer_from_result_with_kb(boto3_client, prompt_text)
 print("🤖결과를 알려드릴게요.....")
 print(natural_answer)
+
+# -------------------------------------------------------------------------------------
+# pie 차트 생성 및 이미지 바이트코드 추출
+# user_prompt에 '통계', '그래프', '그림'이 포함되어 있는지 확인
+# ratio : 각 레이블 비율 / labels : 각 레이블 이름
+png_bytes= ''
+def create_pie_chart(query_result):
+
+    if not query_result or len(query_result) == 0:
+        print("쿼리 결과가 없습니다.")
+        return None
+
+    # 각 row가 최소 2개 이상의 값을 가져야 pie chart를 그릴 수 있음
+    for row in query_result:
+        if len(row) < 2:
+            print("이미지 생성 실패 : 쿼리 결과의 각 행이 2개 이상의 값을 가져야 합니다.")
+            return None
+
+    ratio =  [row[1] for row in query_result if len(row) > 0 and row[1] is not None]
+    labels = [row[0] for row in query_result if len(row) > 0 and row[0] is not None]
+
+    print("arr1:", ratio)
+    print("arr2:", labels)
+    plt.figure()
+    plt.pie(ratio, labels=labels, autopct='%.1f%%', startangle=260, counterclock=False)
+    png_buffer = io.BytesIO()
+    plt.savefig(png_buffer, format='png')
+    png_bytes = png_buffer.getvalue()
+    png_buffer.close()
+    print("이미지 생성 완료")
+    plt.show() #todo 테스트 후 주석 필요 
+    return png_bytes
+
+# '비중', 비율, 통계, 그래프, 그림 등의 키워드가 포함되어 있는지 확인 : 수정가능 
+if any(keyword in question for keyword in ['비중', '비율', '통계', '그래프', '그림']):
+    png_bytes = create_pie_chart(query_result)
+
+# -------------------------------------------------------------------------------------
+
+# -------------------------------------------------------------------------------------
+# 결과물을 객체로 저장해서 채팅에 사용 
+def create_result_object(sql_query, query_result, natural_answer, png_bytes):
+    return {
+        'user_prompt': question, #유저가 입력한 질문
+        "sql_query": sql_query, #sql 쿼리 
+        "query_result": str(query_result), #쿼리 결과를 문자열로 변환
+        "natural_answer": natural_answer, #자연어 결과 
+        "chart_image": png_bytes  # 차트 이미지 바이트코드
+    }
+
+create_result_object(sql_query, query_result, natural_answer, png_bytes) 
