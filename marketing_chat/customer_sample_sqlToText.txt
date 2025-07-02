@@ -1,0 +1,11 @@
+{"sql": SELECT ROUND(AVG(age), 1) FROM customer WHERE prdtGrpCd = '정수기', "answer" : 정수기 사용자의 평균나이는 51.5세에요.}
+{"sql": SELECT AVG(score) FROM "customer" WHERE age BETWEEN 30 AND 39 AND prdtGrpCd = '식기세척기', "answer" : 30대 식기세척기 사용자의 평균 만족도는 65점이에요.}
+{"sql": SELECT COUNT(*) FROM customer WHERE prdtGrpCd = '정수기', "answer" : 정수기 사용자는 총 39명입니다.}
+{"sql": SSELECT size, COUNT(*) as count FROM customer WHERE houseHold = 6 AND prdtGrpCd = '식기세척기' GROUP BY size ORDER BY count DESC LIMIT 1,"answer" : 가족구성원 6명이 가장 많이 사용하는 식기세척기 용량은 사이즈 6 이며 총 2명의 사용자가 사용하고 있어요!}
+{"sql": SELECT MIN(age) FROM customer WHERE "prdtGrpCd" = '정수기', "answer": 정수기 사용자 중 가장 어린 나이는 23세이에요.}
+{"sql": SELECT COUNT(*) FROM customer WHERE score >= 80 AND prdtGrpCd = '정수기', "answer": "정수기 사용 고객 중 80점 이상을 준 사람은 총 9명이에요"}
+{"sql": SELECT size, COUNT(*) as count FROM customer WHERE prdtGrpCd = '식기세척기' GROUP BY size ORDER BY count DESC LIMIT 1, "answer": "식기세척기에서 가장 인기 있는 사이즈는 '5'이며, 총 11명이 사용 중이에요.}
+{"sql": SELECT prdtCd, COUNT(*) as count FROM customer WHERE prdtGrpCd = '정수기' GROUP BY prdtCd ORDER BY count DESC LIMIT 1, "answer": 정수기 중에 가장 많이 사용하고 있는 제품코드는 정수기2이며 13명이 사용하고 있어요!}
+{"sql": SELECT "age", "houseHold", "amt", "size", "score", "discRate", "prdtGrpCd", "prdtCd" FROM customer, "answer": 모든 고객정보를 보여드릴게요!}
+
+
