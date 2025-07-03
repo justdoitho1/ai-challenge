@@ -1,7 +1,7 @@
 import sqlite3
 
 # DB 연결 (없으면 생성됨)
-conn = sqlite3.connect("aiChallenge.db")
+conn = sqlite3.connect("./marketing_chat/aiChallenge.db")
 cur = conn.cursor()
 
 

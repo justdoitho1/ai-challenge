@@ -7,6 +7,7 @@ import boto3
 import numpy as np
 import json
 import random
+
 model = None
 client = None
 
@@ -23,6 +24,14 @@ with open('access_key.json', 'r') as f:
   secret_key = keys.get('secret_key', '')
   flow_identifier = keys.get('flow_identifier', '')
   flow_alias_identifier = keys.get('flow_alias_identifier', '')
+  
+  client = boto3.client(
+    service_name='bedrock-agent-runtime',
+    region_name='us-west-2',
+    aws_access_key_id=access_key, # user aws access key
+    aws_secret_access_key =secret_key # user aws secret key
+  )
+  
 # -------------------------------------------------------------------------------------
 # model 전역변수로 사용
 if tf.io.gfile.exists('product_recommendation_model.h5'):
@@ -85,6 +94,9 @@ class ChatMessage(): #이미지 및 텍스트 메시지를 저장할 수 있는 
     self.image_bytes = image_bytes #used to pass to the model
 
 def chat_with_model(message_history, new_text=None):
+  if client is None:
+    raise ValueError("AWS client is not initialized. Please check your AWS credentials and configuration.")  
+  
   while True:
     # 사용자 입력부분(챗봇 input) -------------------------------------------------------------------
     question = new_text
@@ -94,12 +106,6 @@ def chat_with_model(message_history, new_text=None):
 
     if question.lower() == 'exit':
       break
-    client = boto3.client(
-      service_name='bedrock-agent-runtime',
-      region_name='us-west-2',
-      aws_access_key_id=access_key, # user aws access key
-      aws_secret_access_key =secret_key # user aws secret key
-    )
     response = client.invoke_flow(
       flowIdentifier=flow_identifier,
       flowAliasIdentifier=flow_alias_identifier,

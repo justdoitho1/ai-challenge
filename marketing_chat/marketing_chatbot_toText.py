@@ -19,7 +19,7 @@ llm_model = ''
 model_arn = ''
 
 try:
-    with open('../access_key.json', 'r') as f:
+    with open('./access_key.json', 'r') as f:
         keys = json.load(f)
         access_key = keys.get('access_key', '')
         secret_key = keys.get('secret_key', '')
@@ -66,7 +66,7 @@ def converse_with_bedrock_kb(boto3_client, sys_prompt, usr_prompt):
     inference_config = {"temperature": temperature, "topP": top_p}
     response = boto3_client.retrieve_and_generate(
     input= {"text": sys_prompt[0]["text"] + user_prompt[0]["content"][0]["text"]+ "\nSkip the preamble and provide only the SQL."},
-     retrieveAndGenerateConfiguration={
+    retrieveAndGenerateConfiguration={
         "type": "KNOWLEDGE_BASE",  
         "knowledgeBaseConfiguration": {
             "knowledgeBaseId": knowledge_base_id1, # 지식기반 woongdalsam 
@@ -116,7 +116,7 @@ boto3_client = init_boto3_client(region_name)
 # -------------------------------------------------------------------------------------
 # 데이터베이스의 테이블 및 컬럼 정보를 가져와 SQL 쿼리 생성을 위한 스키마 정보를 출력합니다.
 def get_schema_info(db_path):
-    engine = create_engine(f'sqlite:///{db_path}')
+    engine = create_engine(f'sqlite:///marketing_chat/{db_path}')
     inspector = inspect(engine)
     schema_info = {}
     tables = inspector.get_table_names()
@@ -126,7 +126,7 @@ def get_schema_info(db_path):
         schema_info[table_name] = table_info
     return schema_info
 
-schema = get_schema_info("aiChallenge.db")
+schema = get_schema_info("./aiChallenge.db")
 
 # -------------------------------------------------------------------------------------
 # 이미지 폰트 경로 설정
@@ -201,7 +201,7 @@ print(sql_query)
 
 # -------------------------------------------------------------------------------------
 # 사용자가 입력한 쿼리를 DB에서 실행 후 결과 반환 
-conn = sqlite3.connect("aiChallenge.db")
+conn = sqlite3.connect("./marketing_chat/aiChallenge.db")
 cur = conn.cursor()
 
 query_result = cur.execute(sql_query).fetchall()
