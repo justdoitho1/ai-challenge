@@ -148,15 +148,14 @@ local에서 streamlit 명령어를 실행하려면 터미널 경로를 해당 �
 
 ![image](https://github.com/user-attachments/assets/24c4e7a5-8819-44b7-918f-33559bbe71ce)
 
-```
 
 streamlit 실행 명령어
 
 ```
 streamlit run home.py # 기본포트로 실행 8501
 ```
+```
 streamlit run home.py --server.port 8888 # 특정포트로 실행 8888
-
 ```
 실행 결과
 
