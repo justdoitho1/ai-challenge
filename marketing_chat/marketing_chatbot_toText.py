@@ -60,7 +60,7 @@ def init_boto3_client(region: str):
 # USE KNOWLEDGE_BASE
 # --------------------------------------------------------------------------------------
 # AWS 베드락 지식기반 연결 : 자연어 => SQL 변경 
-def converse_with_bedrock_kb(boto3_client, sys_prompt, usr_prompt):    
+def converse_with_bedrock_kb(boto3_client, sys_prompt, user_prompt):    
     temperature = 0.0
     top_p = 0.1
     inference_config = {"temperature": temperature, "topP": top_p}
@@ -190,36 +190,9 @@ def sqlToText_prompt(sql_query: str, result) -> str:
 
 
 # -------------------------------------------------------------------------------------
-# 사용자 상호작용 
-question = input("❓질문을 입력하세요.\n")
-user_prompt = get_user_prompt(question)
-
-response = converse_with_bedrock_kb(boto3_client, sys_prompt, user_prompt)
-sql_query = response['text']
-print("🤖쿼리로 알려드릴게요.....")
-print(sql_query)
-
-# -------------------------------------------------------------------------------------
-# 사용자가 입력한 쿼리를 DB에서 실행 후 결과 반환 
-conn = sqlite3.connect("./marketing_chat/aiChallenge.db")
-cur = conn.cursor()
-
-query_result = cur.execute(sql_query).fetchall()
-print("SQL Query Result:"+str(query_result))
-
-# sql_query,result 을 기반으로 자연어 응답 생성
-# 1.get sqlToText prompt
-prompt_text = sqlToText_prompt(sql_query, query_result)
-# 2.자연어 prompt & 지식기반 활용하여 응답값 반환
-natural_answer = natural_answer_from_result_with_kb(boto3_client, prompt_text)
-print("🤖결과를 알려드릴게요.....")
-print(natural_answer)
-
-# -------------------------------------------------------------------------------------
 # pie 차트 생성 및 이미지 바이트코드 추출
 # user_prompt에 '통계', '그래프', '그림'이 포함되어 있는지 확인
 # ratio : 각 레이블 비율 / labels : 각 레이블 이름
-png_bytes= ''
 def create_pie_chart(query_result):
 
     if not query_result or len(query_result) == 0:
@@ -247,21 +220,57 @@ def create_pie_chart(query_result):
     plt.show() #todo 테스트 후 주석 필요 
     return png_bytes
 
-# '비중', 비율, 통계, 그래프, 그림 등의 키워드가 포함되어 있는지 확인 : 수정가능 
-if any(keyword in question for keyword in ['비중', '비율', '통계', '그래프', '그림']):
-    png_bytes = create_pie_chart(query_result)
 
 # -------------------------------------------------------------------------------------
+class ChatMessage(): #이미지 및 텍스트 메시지를 저장할 수 있는 클래스를 만듭니다.
+  def __init__(self, role, message_type, text, bytesio=None, image_bytes=None):
+    self.role = role
+    self.message_type = message_type
+    self.text = text
+    self.bytesio = bytesio #used for streamlit rendering
+    self.image_bytes = image_bytes #used to pass to the model
 
 # -------------------------------------------------------------------------------------
-# 결과물을 객체로 저장해서 채팅에 사용 
-def create_result_object(sql_query, query_result, natural_answer, png_bytes):
-    return {
-        'user_prompt': question, #유저가 입력한 질문
-        "sql_query": sql_query, #sql 쿼리 
-        "query_result": str(query_result), #쿼리 결과를 문자열로 변환
-        "natural_answer": natural_answer, #자연어 결과 
-        "chart_image": png_bytes  # 차트 이미지 바이트코드
-    }
+def chat_with_sql(message_history, new_text=None):
+   
+    # 사용자 상호작용 
+    question = new_text
+    new_text_message = ChatMessage('user', 'text', text=new_text)
+    message_history.append(new_text_message)  
 
-create_result_object(sql_query, query_result, natural_answer, png_bytes) 
+    user_prompt = get_user_prompt(question)
+
+    response = converse_with_bedrock_kb(boto3_client, sys_prompt, user_prompt)
+    sql_query = response['text']
+    print("🤖쿼리로 알려드릴게요.....")
+    print(sql_query)
+
+    # -------------------------------------------------------------------------------------
+    # 사용자가 입력한 쿼리를 DB에서 실행 후 결과 반환 
+    conn = sqlite3.connect("./marketing_chat/aiChallenge.db")
+    cur = conn.cursor()
+
+    query_result = cur.execute(sql_query).fetchall()
+    print("SQL Query Result:"+str(query_result))
+
+    # sql_query,result 을 기반으로 자연어 응답 생성
+    # 1.get sqlToText prompt
+    prompt_text = sqlToText_prompt(sql_query, query_result)
+    # 2.자연어 prompt & 지식기반 활용하여 응답값 반환
+    natural_answer = natural_answer_from_result_with_kb(boto3_client, prompt_text)
+    print("🤖결과를 알려드릴게요.....")
+    print(natural_answer)
+    
+    response_message = ChatMessage('assistant', 'text', natural_answer)
+    message_history.append(response_message)
+
+    # '비중', 비율, 통계, 그래프, 그림 등의 키워드가 포함되어 있는지 확인 : 수정가능 
+    if any(keyword in question for keyword in ['비중', '비율', '통계', '그래프', '그림']):
+        chart = create_pie_chart(query_result)
+        response_chart = ChatMessage('assistant', 'image', text="차트 이미지", bytesio=chart)
+        message_history.append(response_chart)
+    
+    
+    return message_history
+    # -------------------------------------------------------------------------------------
+  
