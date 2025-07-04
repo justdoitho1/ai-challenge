@@ -144,12 +144,18 @@ aws 연결 관련 코드는 아래 docs를 참고하였습니다.
 
 ## streamlit을 이용한 front-end 구성
 
-실행 명령어
+streamlit 실행 명령어
 
 ```
 streamlit run chatbot_app.py
 ```
+streamlit 실행 위치
+C:\wj-ai\ai-challenge # chatbot_app.py 가 위치한 곳
 
+![image](https://github.com/user-attachments/assets/605ee489-cc9a-41a8-ab4a-bf571c549087)
+![image](https://github.com/user-attachments/assets/4a8d9b7b-a0b7-4877-b90c-8cfc27351062)
+
+```
 실행 결과
 
 ![pic 18](https://github.com/user-attachments/assets/47006046-b8f3-4573-b56d-8134a97189fd)
