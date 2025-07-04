@@ -1,2 +1,9 @@
 [theme]
 backgroundColor="#fdf8ec" 			# theme
+base="light"
+
+[server]
+headless = true
+
+[client]
+showSidebarNavigation = true
