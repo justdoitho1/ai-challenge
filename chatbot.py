@@ -96,96 +96,92 @@ class ChatMessage(): #이미지 및 텍스트 메시지를 저장할 수 있는 
 def chat_with_model(message_history, new_text=None):
   if client is None:
     raise ValueError("AWS client is not initialized. Please check your AWS credentials and configuration.")  
+# 사용자 입력부분(챗봇 input) -------------------------------------------------------------------
+  question = new_text
+  print("질문:", question)
+  new_text_message = ChatMessage('user', 'text', text=new_text)
+  message_history.append(new_text_message)  
   
-  while True:
-    # 사용자 입력부분(챗봇 input) -------------------------------------------------------------------
-    question = new_text
-    print("질문:", question)
-    new_text_message = ChatMessage('user', 'text', text=new_text)
-    message_history.append(new_text_message)  
-
-    if question.lower() == 'exit':
-      break
-    response = client.invoke_flow(
-      flowIdentifier=flow_identifier,
-      flowAliasIdentifier=flow_alias_identifier,
-      inputs=[
-        {
-          "content": {
-            "document": question
-          },
-          "nodeName": "FlowInputNode",
-          "nodeOutputName": "document"
-        }
-      ]
-    )
-    
-    # 모델 출력부분(챗봇 output) -------------------------------------------------------------------
-    result = {}
-
-    for event in response.get("responseStream"):
-      result.update(event)
-    '''
-    expect output format
-      ```json
+  response = client.invoke_flow(
+    flowIdentifier=flow_identifier,
+    flowAliasIdentifier=flow_alias_identifier,
+    inputs=[
       {
-        "output_data": [
-          45,
-          7,
-          40,
-          14,
-          85,
-          7
-        ]
+        "content": {
+          "document": question
+        },
+        "nodeName": "FlowInputNode",
+        "nodeOutputName": "document"
       }
-      ```
-    '''
-    # parsing
-    res = result['flowOutputEvent']['content']['document'].replace('`', '').replace('json', '')
-    
-    # json 문자열을 실제 json 객체로 변환
-    try:
-      res_json = json.loads(res)
-      if 'output_data' in res_json:
-        output_data = res_json['output_data']
-        if len(output_data) == 6:
-          # '나이', '가족 수', '렌탈비용(천원)', '용량', '만족도', '할인율'
-          if(output_data[0] is None or output_data[0] == 0):
-            output_data[0] = random.randint(23, 70)  # 나이
-          if(output_data[4] is None or output_data[4] == 0):
-            output_data[4] = random.randint(70, 95)
-          if(output_data[5] is None or output_data[5] == 0):
-            output_data[5] = random.randint(5, 10)
-            
-          user_data = np.array([output_data])
-          pred_idx = model_predict(user_data.astype(int))
-          result = product_name[pred_idx[0]]
-          msg = "이 제품을 추천드려요 : " + str(result)
+    ]
+  )
+  
+  # 모델 출력부분(챗봇 output) -------------------------------------------------------------------
+  result = {}
 
-          print("이 제품을 추천드려요 : {}".format(product_name[pred_idx[0]]))
-          response_message = ChatMessage('assistant', 'text', msg)
+  for event in response.get("responseStream"):
+    result.update(event)
+  '''
+  expect output format
+    ```json
+    {
+      "output_data": [
+        45,
+        7,
+        40,
+        14,
+        85,
+        7
+      ]
+    }
+    ```
+  '''
+  # parsing
+  res = result['flowOutputEvent']['content']['document'].replace('`', '').replace('json', '')
+  
+  # json 문자열을 실제 json 객체로 변환
+  try:
+    res_json = json.loads(res)
+    if 'output_data' in res_json:
+      output_data = res_json['output_data']
+      if len(output_data) == 6:
+        # '나이', '가족 수', '렌탈비용(천원)', '용량', '만족도', '할인율'
+        if(output_data[0] is None or output_data[0] == 0):
+          output_data[0] = random.randint(23, 70)  # 나이
+        if(output_data[4] is None or output_data[4] == 0):
+          output_data[4] = random.randint(70, 95)
+        if(output_data[5] is None or output_data[5] == 0):
+          output_data[5] = random.randint(5, 10)
           
-          img_bytes = get_bytes_from_file(product_img[pred_idx[0]])
-          
-          response_img = ChatMessage('assistant', 'image', text="추천 제품 이미지", bytesio=img_bytes)
-          message_history.append(response_message)
-          message_history.append(response_img)
+        user_data = np.array([output_data])
+        pred_idx = model_predict(user_data.astype(int))
+        result = product_name[pred_idx[0]]
+        msg = "이 제품을 추천드려요 : " + str(result)
 
-          return message_history
+        print("이 제품을 추천드려요 : {}".format(product_name[pred_idx[0]]))
+        response_message = ChatMessage('assistant', 'text', msg)
+        
+        img_bytes = get_bytes_from_file(product_img[pred_idx[0]])
+        
+        response_img = ChatMessage('assistant', 'image', text="추천 제품 이미지", bytesio=img_bytes)
+        message_history.append(response_message)
+        message_history.append(response_img)
 
-        else:
-          print("output_data의 길이가 올바르지 않습니다. 예상 길이: 6, 실제 길이: ".format(len(output_data)))
-          response_message = ChatMessage('assistant', 'text', "output_data의 길이가 올바르지 않습니다.")
-          return message_history.append(response_message)
+        return message_history
 
       else:
-        print("output_data 키가 JSON에 없습니다.")
-        response_message = ChatMessage('assistant', 'text', "output_data 키가 JSON에 없습니다.")
+        print("output_data의 길이가 올바르지 않습니다. 예상 길이: 6, 실제 길이: ".format(len(output_data)))
+        response_message = ChatMessage('assistant', 'text', "output_data의 길이가 올바르지 않습니다.")
         return message_history.append(response_message)
-    except json.JSONDecodeError as e:
-      print("JSON 파싱 오류:", e)
-      response_message = ChatMessage('assistant', 'text', "JSON 파싱 오류가 발생했습니다.")
+
+    else:
+      print("output_data 키가 JSON에 없습니다.")
+      response_message = ChatMessage('assistant', 'text', "output_data 키가 JSON에 없습니다.")
       return message_history.append(response_message)
+  except json.JSONDecodeError as e:
+    print("JSON 파싱 오류:", e)
+    response_message = ChatMessage('assistant', 'text', "JSON 파싱 오류가 발생했습니다.")
+    return message_history.append(response_message)
 
 # -------------------------------------------------------------------------------------
 
