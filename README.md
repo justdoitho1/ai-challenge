@@ -144,17 +144,18 @@ aws 연결 관련 코드는 아래 docs를 참고하였습니다.
 
 ## streamlit을 이용한 front-end 구성
 
+local에서 streamlit 명령어를 실행하려면 터미널 경로를 해당 파일이 있는 디렉토리로 이동해야 합니다.
+
+![image](https://github.com/user-attachments/assets/24c4e7a5-8819-44b7-918f-33559bbe71ce)
+
+
 streamlit 실행 명령어
 
 ```
-streamlit run chatbot_app.py
+streamlit run home.py # 기본포트로 실행 8501
 ```
-streamlit 실행 위치
-C:\wj-ai\ai-challenge # chatbot_app.py 가 위치한 곳
-
-![image](https://github.com/user-attachments/assets/605ee489-cc9a-41a8-ab4a-bf571c549087)
-![image](https://github.com/user-attachments/assets/4a8d9b7b-a0b7-4877-b90c-8cfc27351062)
-
+```
+streamlit run home.py --server.port 8888 # 특정포트로 실행 8888
 ```
 실행 결과
 
