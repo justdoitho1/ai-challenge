@@ -283,6 +283,15 @@ def chat_with_sql(message_history, new_text=None):
     
     response_message = ChatMessage('assistant', 'text', natural_answer)
     message_history.append(response_message)
+    
+    #sql, 쿼리, query 키워드가 포함된 경우 sql 출력
+    if any(keyword in question for keyword in ['sql', '쿼리', 'query']):
+        response_message = ChatMessage('assistant', 'text', sql_query)
+        message_history.append(response_message)
+        return message_history
+    
+    response_message = ChatMessage('assistant', 'text', natural_answer)
+    message_history.append(response_message)
 
     # '비중', 비율, 통계, 그래프, 그림 등의 키워드가 포함되어 있는지 확인 : 수정가능 
     if any(keyword in question for keyword in ['비중', '비율', '통계', '그래프', '그림']):
