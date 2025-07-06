@@ -1,9 +1,14 @@
 [theme]
-backgroundColor="#fdf8ec" 			# theme
+backgroundColor="#fdf7f1" 			# theme
 base="light"
 
 [server]
-headless = true
+headless = false
+runOnSave = true
+
+[browser]
+serverAddress = "localhost"
+serverPort = 8888
 
 [client]
 showSidebarNavigation = true

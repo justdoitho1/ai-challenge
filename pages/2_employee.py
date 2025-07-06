@@ -3,17 +3,70 @@ from marketing_chat import marketing_chatbot_toText as chat_sql # 통계정보 �
 # --------------------------------------------------------------------------------
 
 st.set_page_config(layout="centered", page_title="employee") #페이지 제목과 레이아웃 설정
-st.title("👨‍💼 직원용") # title 설정
+
+# CSS 스타일 정의
+st.markdown("""
+    <style>
+    /* 첫 번째 헤더: 배경색 대신 이미지 넣기 */
+    .header1 {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 40px;
+        background-color: white;  /* 이미지 투명 부분 보일 때 */
+        display: flex;
+        align-items: center;
+        padding-left: 10px;  /* 이미지 왼쪽 간격 */
+        z-index: 100;
+    }
+
+    .header1 img {
+        height: 30px;  /* 헤더 높이에 맞게 이미지 크기 조절 */
+    }
+
+    /* 두 번째 헤더: 타이틀 표시 */
+    .header2 {
+        position: fixed;
+        top: 40px;
+        left: 0;
+        width: 100%;
+        height: 60px;
+        background-color: #F2811D;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 28px;
+        font-weight: bold;
+        z-index: 99;
+    }
+
+    /* 본문과 헤더가 겹치지 않도록 여백 확보 */
+    .content {
+        margin-top: 110px;
+        padding: 20px;
+    }
+    </style>
+
+    <!-- 실제 헤더 영역 -->
+    <div class="header1"></div>
+    <div class="header2">💛 웅달샘 직원 챗봇</div>
+""", unsafe_allow_html=True)
+
+# 본문 콘텐츠
+st.markdown('<div class="content">', unsafe_allow_html=True)
+
 
 # --------------------------------------------------------------------------------
 st.markdown(
     f"""
     <style>
     .user-bubble {{
-        background-color: #f7624e;
+        background-color: #F2811D;
         color: white;
         padding: 0.7em 1.2em;
-        border-radius: 1.2em 1.2em 1.2em 0.3em;
+        border-radius: 1.2em 1.2em 0.3em 1.2em;
         margin-bottom: 0.5em;
         max-width: 60%;
         align-self: flex-end;
@@ -24,7 +77,7 @@ st.markdown(
         background-color: #f2f0e7;
         color: black;
         padding: 0.7em 1.2em;
-        border-radius: 1.2em 1.2em 0.3em 1.2em;
+        border-radius: 1.2em 1.2em 1.2em 0.3em;
         margin-bottom: 0.5em;
         max-width: 60%;
         align-self: flex-start;
@@ -42,9 +95,21 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+# 포커스 유도용 안내 (우회 방식)
+st.markdown("""
+<script>
+setTimeout(function() {
+  const elements = window.parent.document.querySelectorAll('textarea');
+  if (elements.length > 0) {
+    elements[elements.length - 1].focus();
+  }
+}, 500);
+</script>
+""", unsafe_allow_html=True)
+
+
 # --------------------------------------------------------------------------------
-# text_to_sql
-st.header("원하시는 자료를 말씀해주세요 V(ㅇㅅ<)V") #tab2 헤더
+st.subheader("원하시는 자료를 말씀해주세요 V(ㅇㅅ<)V") #tab2 헤더
 
 CHAT_KEY = "chat_history_employee"
 
@@ -53,7 +118,16 @@ if CHAT_KEY not in st.session_state: #채팅 기록이 아직 생성되지 않�
 
 chat_container = st.container()
 
-input_text = st.chat_input("또또사랑~ 달샘이에게 물어봐~") #채팅 입력 상자를 표시합니다.
+# 입력창 + 초기화 버튼을 한 줄에
+col1, col2 = st.columns([4, 1])  # 비율 조정 가능
+
+with col1:
+    input_text = st.chat_input("또또사랑~ 달샘이에게 물어봐주세요~", key="user_input") #채팅 입력 상자를 표시합니다.
+
+with col2:
+    if st.button("💬 초기화"):
+        st.session_state[CHAT_KEY] = []
+        st.rerun()  # 화면 즉시 갱신
 
 if input_text: #run the code in this if block after the user submits a chat message
   chat_sql.chat_with_sql(message_history=st.session_state[CHAT_KEY], new_text=input_text)
@@ -67,5 +141,6 @@ for message in st.session_state[CHAT_KEY]: #채팅 기록을 반복합니다.
       if message.message_type == "text":
         st.markdown(f'<div class="assistant-bubble">{message.text}</div>', unsafe_allow_html=True)
       elif message.message_type == "image" and message.bytesio:
-        st.image(message.bytesio, caption="제품 이미지")
+        st.image(message.bytesio, caption="통계 이미지")
+
 
