@@ -238,6 +238,26 @@ def chat_with_sql(message_history, new_text=None):
     new_text_message = ChatMessage('user', 'text', text=new_text)
     message_history.append(new_text_message)  
 
+    if any(keyword in question for keyword in ['말의힘', '말의 힘', '윤석금', '회장님', '보스']):
+        file_path = './img/boss.jpg'  # 보스 이미지 파일 경로
+        file_bytes = open(file_path, "rb").read()  # 파일을 읽기 모드로 열기
+        
+        response_chart = ChatMessage('assistant', 'image', text="boss", bytesio=file_bytes)
+        response_message = ChatMessage('assistant', 'text', "나를 찾는가")
+        message_history.append(response_chart)
+        message_history.append(response_message)
+        return message_history
+
+    if any(keyword in question for keyword in ['swimming', '수영', '이수영', '대표님', '빛']):
+        file_path = './img/swimming.jpg'  # 보스 이미지 파일 경로
+        file_bytes = open(file_path, "rb").read()  # 파일을 읽기 모드로 열기
+
+        response_chart = ChatMessage('assistant', 'image', text="boss", bytesio=file_bytes)
+        response_message = ChatMessage('assistant', 'text', "이몸 등장")
+        message_history.append(response_chart)
+        message_history.append(response_message)
+        return message_history
+
     user_prompt = get_user_prompt(question)
 
     response = converse_with_bedrock_kb(boto3_client, sys_prompt, user_prompt)
