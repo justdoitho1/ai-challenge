@@ -69,7 +69,7 @@ st.markdown('<div class="content">', unsafe_allow_html=True)
 
 
 st.markdown(
-    "<h3 style='text-align: center;color:#f35011;'>또또사랑~ 달샘이가 도와드릴게요! 💕</h3>",
+    "<h3 style='text-align: center;color:#f35011;'>또또사랑~ 달샘이가 도와드릴게요!</h3>",
     unsafe_allow_html=True
 )
 
@@ -85,11 +85,11 @@ st.markdown(
 col1, col2, col3, col4, col5 = st.columns(5)
 
 with col2:
-    if st.button("💖 고객"):
+    if st.button("고객용"):
         st.switch_page("pages/1_customer.py")  # customer 페이지로 이동
 
 with col4:
-    if st.button("💛 직원"):
+    if st.button("직원용"):
         st.switch_page("pages/2_employee.py")  # employee 페이지로 이동
 
 
