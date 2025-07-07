@@ -87,7 +87,7 @@ st.markdown(f"""
     <div class="header1"></div>
     <div class="header2">
       <img src="data:image/png;base64,{img_base64_dalsam}" style="height: 50px;">
-       달샘이에게 질문하세요!
+       사우님 달샘이가 도와드릴게요!
     </div>
 """, unsafe_allow_html=True)
 
@@ -180,6 +180,24 @@ with col2:
     if st.button("💬 초기화"):
         st.session_state[CHAT_KEY] = []
         st.rerun()  # 화면 즉시 갱신
+
+
+st.markdown(
+    "<p style='font-size: 13px; color: gray;'>질문은 아래 버튼을 참고하세요.</p>",
+    unsafe_allow_html=True
+)
+# 예시 질문 목록 
+question_examples = ["총 정수기 사용자 알려줘",
+                    "제품별 사용자수를 그래프로 보여줘",
+                    "연령대별 식기세척기 사용자수를 그래프로 보여주고 쿼리도 보여줘",
+                    ]
+
+# 예시 질문 버튼을 생성합니다.
+for i, example in enumerate(question_examples):
+    if st.button(example, key=f"example_{i}"): # 예시 질문 버튼을 클릭하면 입력창에 예시 질문을 넣습니다.
+        input_text = example
+        
+
 
 if input_text: #run the code in this if block after the user submits a chat message
   chat_sql.chat_with_sql(message_history=st.session_state[CHAT_KEY], new_text=input_text)

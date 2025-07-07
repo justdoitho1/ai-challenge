@@ -288,17 +288,12 @@ def chat_with_sql(message_history, new_text=None):
     if any(keyword in question for keyword in ['sql', '쿼리', 'query']):
         response_message = ChatMessage('assistant', 'text', sql_query)
         message_history.append(response_message)
-        return message_history
-    
-    response_message = ChatMessage('assistant', 'text', natural_answer)
-    message_history.append(response_message)
 
     # '비중', 비율, 통계, 그래프, 그림 등의 키워드가 포함되어 있는지 확인 : 수정가능 
     if any(keyword in question for keyword in ['비중', '비율', '통계', '그래프', '그림']):
         chart = create_pie_chart(query_result)
         response_chart = ChatMessage('assistant', 'image', text="차트 이미지", bytesio=chart)
         message_history.append(response_chart)
-    
     
     return message_history
     # -------------------------------------------------------------------------------------
