@@ -164,6 +164,10 @@ st.markdown(
 )
 
 CHAT_KEY = "chat_history_employee"
+PENDING_KEY = "response_pending"
+
+if PENDING_KEY not in st.session_state:
+    st.session_state[PENDING_KEY] = False
 
 if CHAT_KEY not in st.session_state: #채팅 기록이 아직 생성되지 않았는지 확인합니다.
     st.session_state[CHAT_KEY] = [] #채팅 기록 초기화
@@ -186,23 +190,76 @@ st.markdown(
     "<p style='font-size: 13px; color: gray;'>질문은 아래 버튼을 참고하세요.</p>",
     unsafe_allow_html=True
 )
-# 예시 질문 목록 
-question_examples = ["총 정수기 사용자 알려줘",
-                    "제품별 사용자수를 그래프로 보여줘",
-                    "연령대별 식기세척기 사용자수를 그래프로 보여주고 쿼리도 보여줘",
-                    ]
 
-# 예시 질문 버튼을 생성합니다.
-for i, example in enumerate(question_examples):
-    if st.button(example, key=f"example_{i}"): # 예시 질문 버튼을 클릭하면 입력창에 예시 질문을 넣습니다.
-        input_text = example
-        
+# --------------------------------------------------------------------------------
+# 예시 질문을 보여주는 확장 가능한 영역을 만듭니다.
+with st.expander("포로모션 시나리오", expanded=False): #예시 질문을 보여주는 확장 가능한 영역을 만듭니다.
+    # 예시 질문 목록 
+    question_examples = [
+       "정수기를 사용하는 사람의 수와 정수기 제품 중 얼음정수기를 사용하는 사람의 수를 쿼리로 알려줘",
+       "정수기 렌탈료를 10000원 단위로 구분해서 고객 비율을 알려줘",
+        "정수기 제품 중 4만원대 제품을 사용하는 연령대를 알려줘",
+                        ]
+    # 예시 질문 버튼을 생성합니다.
+    st.markdown(
+       "<p style='font-size: 14px; font-weight: bold; color: #f7470c;'>무더위가 기승인 요즘 얼음 정수기가 필요하다! 우리 프로모션을 진행해볼까요?</p>",
+        unsafe_allow_html=True
+        ) 
+    for i, example in enumerate(question_examples):
+        if i == 0: # 첫 번째 예시 질문은 강조 표시합니다.
+            st.markdown(
+                "<p style='font-size: 14px; font-weight: bold; color: #f7470c;'>현재 얼음정수기를 사용하는 사람의 비율을 확인하여 프로모션 대상을 뽑아 보아요~</p>",
+                unsafe_allow_html=True
+               )
+        if i == 1:
+            st.markdown(
+               "<p style='font-size: 14px; font-weight: bold; color: #f7470c;'>얼음정수기 프로모션을 위해 고객의 연령대와 렌탈료를 확인해보아요~</p>",
+                unsafe_allow_html=True
+               )
+
+        if st.button(example, key=f"example_{i}"): # 예시 질문 버튼을 클릭하면 입력창에 예시 질문을 넣습니다.
+            input_text = example
 
 
-if input_text: #run the code in this if block after the user submits a chat message
-  chat_sql.chat_with_sql(message_history=st.session_state[CHAT_KEY], new_text=input_text)
-  
+# --------------------------------------------------------------------------------
+# 예시 질문을 보여주는 확장 가능한 영역을 만듭니다.
+with st.expander("질문 예시", expanded=False): #예시 질문을 보여주는 확장 가능한 영역을 만듭니다.
+    # 예시 질문 목록 
+    question_examples = [
+       "정수기를 사용하는 사람의 수와 정수기 제품 중 얼음정수기를 사용하는 사람의 수를 쿼리로 알려줘",
+        "정수기 렌탈료를 10000원 단위로 구분해서 고객 비율을 알려줘",
+        "정수기 제품 중 4만원대 제품을 사용하는 연령대를 알려줘",
+                        ]
+    for i, example in enumerate(question_examples):
+        if st.button(example, key=f"example2_{i}"): # 예시 질문 버튼을 클릭하면 입력창에 예시 질문을 넣습니다.
+            input_text = example
 
+
+# --------------------------------------------------------------------------------
+# 1️⃣ 유저 메시지 즉시 추가 + rerun
+if input_text and not st.session_state[PENDING_KEY]:
+    st.session_state[CHAT_KEY].append(chat_sql.ChatMessage(role="user", message_type="text", text=input_text))
+    st.session_state[PENDING_KEY] = True
+    st.rerun()
+
+# 2️⃣ 응답이 없고, 마지막 메시지가 user면 → AI 호출
+if st.session_state[PENDING_KEY]:
+    # 최근 메시지 인덱스
+    last_index = len(st.session_state[CHAT_KEY]) - 1
+    last_msg = st.session_state[CHAT_KEY][last_index]
+
+    # 💡 조건: 마지막 메시지가 유저이고, 그 뒤에 아직 assistant 메시지가 안 붙었을 때만 실행
+    if last_msg.role == "user" and (
+        last_index == len(st.session_state[CHAT_KEY]) - 1 or
+        (last_index + 1 < len(st.session_state[CHAT_KEY]) and st.session_state[CHAT_KEY][last_index + 1].role != "assistant")
+    ):
+        with st.spinner("달샘이가 답변 중이에요..."):
+            result = chat_sql.chat_with_sql(message_history=st.session_state[CHAT_KEY], new_text=last_msg.text)
+
+        st.session_state[PENDING_KEY] = False
+        st.rerun()
+
+# --------------------------------------------------------------------------------
 avatar_data_url = f"data:image/png;base64,{img_base64_employee}"
 avatar_data_url2 = f"data:image/png;base64,{img_base64_dalsam}"
 

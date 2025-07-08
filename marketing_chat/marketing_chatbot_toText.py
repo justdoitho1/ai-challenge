@@ -235,66 +235,70 @@ def chat_with_sql(message_history, new_text=None):
    
     # 사용자 상호작용 
     question = new_text
-    new_text_message = ChatMessage('user', 'text', text=new_text)
-    message_history.append(new_text_message)  
 
-    if any(keyword in question for keyword in ['말의힘', '말의 힘', '윤석금', '회장님', '보스']):
-        file_path = './img/boss.jpg'  # 보스 이미지 파일 경로
-        file_bytes = open(file_path, "rb").read()  # 파일을 읽기 모드로 열기
+    try:
+        if any(keyword in question for keyword in ['말의힘', '말의 힘', '윤석금', '회장님', '보스']):
+            file_path = './img/boss.jpg'  # 보스 이미지 파일 경로
+            file_bytes = open(file_path, "rb").read()  # 파일을 읽기 모드로 열기
+            
+            response_chart = ChatMessage('assistant', 'image', text="boss", bytesio=file_bytes)
+            response_message = ChatMessage('assistant', 'text', "나를 찾는가")
+            message_history.append(response_chart)
+            message_history.append(response_message)
+            return message_history
+
+        if any(keyword in question for keyword in ['swimming', '수영', '이수영', '대표님', '빛']):
+            file_path = './img/swimming.jpg'  # 보스 이미지 파일 경로
+            file_bytes = open(file_path, "rb").read()  # 파일을 읽기 모드로 열기
+
+            response_chart = ChatMessage('assistant', 'image', text="boss", bytesio=file_bytes)
+            response_message = ChatMessage('assistant', 'text', "이몸 등장")
+            message_history.append(response_chart)
+            message_history.append(response_message)
+            return message_history
+
+        user_prompt = get_user_prompt(question)
+
+        response = converse_with_bedrock_kb(boto3_client, sys_prompt, user_prompt)
+        sql_query = response['text']
+        print("🤖쿼리로 알려드릴게요.....")
+        print(sql_query)
+
+        # -------------------------------------------------------------------------------------
+        # 사용자가 입력한 쿼리를 DB에서 실행 후 결과 반환 
+        conn = sqlite3.connect("./marketing_chat/aiChallenge.db")
+        cur = conn.cursor()
+        query_result = cur.execute(sql_query).fetchall()
+        print("SQL Query Result:"+str(query_result))
+
+        # sql_query,result 을 기반으로 자연어 응답 생성
+        # 1.get sqlToText prompt
+        prompt_text = sqlToText_prompt(sql_query, query_result)
+        # 2.자연어 prompt & 지식기반 활용하여 응답값 반환
+        natural_answer = natural_answer_from_result_with_kb(boto3_client, prompt_text)
+        print("🤖결과를 알려드릴게요.....")
+        print(natural_answer)
         
-        response_chart = ChatMessage('assistant', 'image', text="boss", bytesio=file_bytes)
-        response_message = ChatMessage('assistant', 'text', "나를 찾는가")
-        message_history.append(response_chart)
+        response_message = ChatMessage('assistant', 'text', natural_answer)
         message_history.append(response_message)
+        
+        #sql, 쿼리, query 키워드가 포함된 경우 sql 출력
+        if any(keyword in question for keyword in ['sql', '쿼리', 'query']):
+            response_message = ChatMessage('assistant', 'text', sql_query)
+            message_history.append(response_message)
+
+        # '비중', 비율, 통계, 그래프, 그림 등의 키워드가 포함되어 있는지 확인 : 수정가능 
+        if any(keyword in question for keyword in ['비중', '비율', '통계', '그래프', '그림']):
+            chart = create_pie_chart(query_result)
+            response_chart = ChatMessage('assistant', 'image', text="차트 이미지", bytesio=chart)
+            message_history.append(response_chart)
+        
         return message_history
-
-    if any(keyword in question for keyword in ['swimming', '수영', '이수영', '대표님', '빛']):
-        file_path = './img/swimming.jpg'  # 보스 이미지 파일 경로
-        file_bytes = open(file_path, "rb").read()  # 파일을 읽기 모드로 열기
-
-        response_chart = ChatMessage('assistant', 'image', text="boss", bytesio=file_bytes)
-        response_message = ChatMessage('assistant', 'text', "이몸 등장")
-        message_history.append(response_chart)
-        message_history.append(response_message)
-        return message_history
-
-    user_prompt = get_user_prompt(question)
-
-    response = converse_with_bedrock_kb(boto3_client, sys_prompt, user_prompt)
-    sql_query = response['text']
-    print("🤖쿼리로 알려드릴게요.....")
-    print(sql_query)
-
-    # -------------------------------------------------------------------------------------
-    # 사용자가 입력한 쿼리를 DB에서 실행 후 결과 반환 
-    conn = sqlite3.connect("./marketing_chat/aiChallenge.db")
-    cur = conn.cursor()
-
-    query_result = cur.execute(sql_query).fetchall()
-    print("SQL Query Result:"+str(query_result))
-
-    # sql_query,result 을 기반으로 자연어 응답 생성
-    # 1.get sqlToText prompt
-    prompt_text = sqlToText_prompt(sql_query, query_result)
-    # 2.자연어 prompt & 지식기반 활용하여 응답값 반환
-    natural_answer = natural_answer_from_result_with_kb(boto3_client, prompt_text)
-    print("🤖결과를 알려드릴게요.....")
-    print(natural_answer)
     
-    response_message = ChatMessage('assistant', 'text', natural_answer)
-    message_history.append(response_message)
-    
-    #sql, 쿼리, query 키워드가 포함된 경우 sql 출력
-    if any(keyword in question for keyword in ['sql', '쿼리', 'query']):
-        response_message = ChatMessage('assistant', 'text', sql_query)
-        message_history.append(response_message)
+    except Exception as e:
+        print("오류발생 :", e)
+        response_message = ChatMessage('assistant', 'text', "달샘이가 이해하지 못했어요. 다시 질문해 주세요.😭")
+        return message_history.append(response_message)
 
-    # '비중', 비율, 통계, 그래프, 그림 등의 키워드가 포함되어 있는지 확인 : 수정가능 
-    if any(keyword in question for keyword in ['비중', '비율', '통계', '그래프', '그림']):
-        chart = create_pie_chart(query_result)
-        response_chart = ChatMessage('assistant', 'image', text="차트 이미지", bytesio=chart)
-        message_history.append(response_chart)
-    
-    return message_history
-    # -------------------------------------------------------------------------------------
+  # -------------------------------------------------------------------------------------
   

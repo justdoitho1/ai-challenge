@@ -42,30 +42,30 @@ def model_predict(user_data):
   prediction = model.predict(user_data)
   return np.argmax(prediction, axis=1)
 
+product_name = {
+  0: [ '식기세척기 1', 'WHITE', '싱글용', '용량 : 4인분', '렌탈비용 : 23,000원'],
+  1: [ '식기세척기 2', 'PINK', '싱글용', '용량 : 3인분', '렌탈비용 : 21,000원'],
+  2: [ '식기세척기 3', 'GRAY', '4인가족용', '용량 : 8인분', '렌탈비용 : 42,000원'],
+  3: [ '식기세척기 4', 'PINK', '4인가족용', '용량 : 6인분', '렌탈비용 : 38,000원'],
+  4: [ '식기세척기 5', 'WHITE', '4인가족용', '용량 : 10인분', '렌탈비용 : 47,000원'],
+  5: [ '식기세척기 6', 'WHITE', '4인가족용', '용량 : 8인분', '렌탈비용 : 43,000원'],
+  6: [ '식기세척기 7', 'BLACK', '4인가족용', '용량 : 10인분', '렌탈비용 : 40,000원'],
+  7: [ '식기세척기 8', 'BLACK', '대가족용', '용량 : 16인분', '렌탈비용 : 55,000원'],
+  8: [ '식기세척기 9', 'YELLOW', '대가족용', '용량 : 14인분', '렌탈비용 : 58,000원'],
+  9: ['식기세척기 10', 'GRAY', '대가족용', '용량 : 18인분', '렌탈비용 : 62,000원'],
+}
 # product_name = {
 #   0: [ '식기세척기 1', 'WHITE', '싱글용', '용량 : 4인분', '렌탈비용 : 23,000원'],
 #   1: [ '식기세척기 2', 'PINK', '싱글용', '용량 : 3인분', '렌탈비용 : 21,000원'],
-#   2: [ '식기세척기 3', 'GRAY', '4인가족용', '용량 : 8인분', '렌탈비용 : 42,000원'],
-#   3: [ '식기세척기 4', 'PINK', '4인가족용', '용량 : 6인분', '렌탈비용 : 38,000원'],
-#   4: [ '식기세척기 5', 'WHITE', '4인가족용', '용량 : 10인분', '렌탈비용 : 47,000원'],
-#   5: [ '식기세척기 6', 'WHITE', '4인가족용', '용량 : 8인분', '렌탈비용 : 43,000원'],
-#   6: [ '식기세척기 7', 'BLACK', '4인가족용', '용량 : 10인분', '렌탈비용 : 40,000원'],
-#   7: [ '식기세척기 8', 'BLACK', '대가족용', '용량 : 16인분', '렌탈비용 : 55,000원'],
-#   8: [ '식기세척기 9', 'YELLOW', '대가족용', '용량 : 14인분', '렌탈비용 : 58,000원'],
-#   9: ['식기세척기 10', 'GRAY', '대가족용', '용량 : 18인분', '렌탈비용 : 62,000원'],
+#   2: [ '정수기 3', 'GRAY', '4인가족용', '용량 : 8인분', '렌탈비용 : 42,000원'],
+#   3: [ '정수기 4', 'PINK', '4인가족용', '용량 : 6인분', '렌탈비용 : 38,000원'],
+#   4: [ '정수기 5', 'WHITE', '4인가족용', '용량 : 10인분', '렌탈비용 : 47,000원'],
+#   5: [ '정수기 6', 'WHITE', '4인가족용', '용량 : 8인분', '렌탈비용 : 43,000원'],
+#   6: [ '정수기 7', 'BLACK', '4인가족용', '용량 : 10인분', '렌탈비용 : 40,000원'],
+#   7: [ '정수기 8', 'BLACK', '대가족용', '용량 : 16인분', '렌탈비용 : 55,000원'],
+#   8: [ '정수기 9', 'YELLOW', '대가족용', '용량 : 14인분', '렌탈비용 : 58,000원'],
+#   9: ['정수기 10', 'GRAY', '대가족용', '용량 : 18인분', '렌탈비용 : 62,000원'],
 # }
-product_name = {
-  0: [ '정수기 1', 'WHITE', '싱글용', '용량 : 4인분', '렌탈비용 : 23,000원'],
-  1: [ '정수기 2', 'PINK', '싱글용', '용량 : 3인분', '렌탈비용 : 21,000원'],
-  2: [ '정수기 3', 'GRAY', '4인가족용', '용량 : 8인분', '렌탈비용 : 42,000원'],
-  3: [ '정수기 4', 'PINK', '4인가족용', '용량 : 6인분', '렌탈비용 : 38,000원'],
-  4: [ '정수기 5', 'WHITE', '4인가족용', '용량 : 10인분', '렌탈비용 : 47,000원'],
-  5: [ '정수기 6', 'WHITE', '4인가족용', '용량 : 8인분', '렌탈비용 : 43,000원'],
-  6: [ '정수기 7', 'BLACK', '4인가족용', '용량 : 10인분', '렌탈비용 : 40,000원'],
-  7: [ '정수기 8', 'BLACK', '대가족용', '용량 : 16인분', '렌탈비용 : 55,000원'],
-  8: [ '정수기 9', 'YELLOW', '대가족용', '용량 : 14인분', '렌탈비용 : 58,000원'],
-  9: ['정수기 10', 'GRAY', '대가족용', '용량 : 18인분', '렌탈비용 : 62,000원'],
-}
 product_img = {
   0: './img/white_1.jpg',
   1: './img/pink_1.jpg',
@@ -99,8 +99,8 @@ def chat_with_model(message_history, new_text=None):
 # 사용자 입력부분(챗봇 input) -------------------------------------------------------------------
   question = new_text
   print("질문:", question)
-  new_text_message = ChatMessage('user', 'text', text=new_text)
-  message_history.append(new_text_message)  
+  # new_text_message = ChatMessage('user', 'text', text=new_text)
+  # message_history.append(new_text_message)  
   
   response = client.invoke_flow(
     flowIdentifier=flow_identifier,
@@ -171,16 +171,16 @@ def chat_with_model(message_history, new_text=None):
 
       else:
         print("output_data의 길이가 올바르지 않습니다. 예상 길이: 6, 실제 길이: ".format(len(output_data)))
-        response_message = ChatMessage('assistant', 'text', "output_data의 길이가 올바르지 않습니다.")
+        response_message = ChatMessage('assistant', 'text', "달샘이가 이해하지 못했어요. 다시 질문해 주세요.😭")
         return message_history.append(response_message)
 
     else:
       print("output_data 키가 JSON에 없습니다.")
-      response_message = ChatMessage('assistant', 'text', "output_data 키가 JSON에 없습니다.")
+      response_message = ChatMessage('assistant', 'text', "달샘이가 이해하지 못했어요. 다시 질문해 주세요.😭")
       return message_history.append(response_message)
-  except json.JSONDecodeError as e:
-    print("JSON 파싱 오류:", e)
-    response_message = ChatMessage('assistant', 'text', "JSON 파싱 오류가 발생했습니다.")
+  except Exception as e:
+    print("오류발생 :", e)
+    response_message = ChatMessage('assistant', 'text', "달샘이가 이해하지 못했어요. 다시 질문해 주세요.😭")
     return message_history.append(response_message)
 
 # -------------------------------------------------------------------------------------
