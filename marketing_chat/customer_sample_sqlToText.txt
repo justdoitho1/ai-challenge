@@ -7,5 +7,43 @@
 {"sql": SELECT size, COUNT(*) as count FROM customer WHERE prdtGrpCd = '식기세척기' GROUP BY size ORDER BY count DESC LIMIT 1, "answer": "식기세척기에서 가장 인기 있는 사이즈는 '5'이며, 총 11명이 사용 중이에요.}
 {"sql": SELECT prdtCd, COUNT(*) as count FROM customer WHERE prdtGrpCd = '정수기' GROUP BY prdtCd ORDER BY count DESC LIMIT 1, "answer": 정수기 중에 가장 많이 사용하고 있는 제품코드는 정수기2이며 13명이 사용하고 있어요!}
 {"sql": SELECT "age", "houseHold", "amt", "size", "score", "discRate", "prdtGrpCd", "prdtCd" FROM customer, "answer": 모든 고객정보를 보여드릴게요!}
-
-
+{
+    "sql": "SELECT COUNT(*) FROM customer WHERE prdtCd = '얼음정수기'",
+    "answer": "얼음정수기 총 사용자수는 300명이에요."
+},
+{
+    "sql": "SELECT ROUND(100.0 * COUNT(CASE WHEN prdtCd != '얼음정수기' THEN 1 END) / COUNT(*), 2) FROM customer WHERE prdtGrpCd = '정수기'",
+    "answer": "정수기 사용자 중 얼음정수기를 사용하지 않는 고객은 25% 에요"
+},
+{
+    "sql": "SELECT COUNT(*) FROM customer WHERE prdtCd = '비데'",
+    "answer": "비데를 사용하는 고객은 총 150명이에요."
+  },
+  {
+    "sql": "SELECT ROUND(100.0 * COUNT(*) / (SELECT COUNT(*) FROM customer), 2) FROM customer WHERE prdtCd = '공기청정기'",
+    "answer": "전체 고객 중 약 18%가 공기청정기를 사용하고 있어요."
+  },
+  {
+    "sql": "SELECT COUNT(*) FROM customer WHERE prdtGrpCd = '정수기'",
+    "answer": "정수기를 사용하는 전체 고객 수는 1,200명이에요."
+  },
+  {
+    "sql": "SELECT ROUND(100.0 * COUNT(*) / (SELECT COUNT(*) FROM customer), 2) FROM customer WHERE prdtCd = '비데'",
+    "answer": "전체 고객 중 약 12.5%가 비데를 사용하고 있어요."
+  },
+  {
+    "sql": "SELECT ROUND(100.0 * COUNT(CASE WHEN prdtCd = '얼음정수기' THEN 1 END) / COUNT(*), 2) FROM customer WHERE prdtGrpCd = '정수기'",
+    "answer": "정수기 사용자 중 얼음정수기 이용자는 75%에요."
+  },
+  {
+    "sql": "SELECT COUNT(*) FROM customer WHERE prdtCd != '비데'",
+    "answer": "비데를 제외한 제품을 사용하는 고객은 1,050명이에요."
+  },
+  {
+    "sql": "SELECT ROUND(100.0 * COUNT(*) / (SELECT COUNT(*) FROM customer), 2) FROM customer WHERE prdtGrpCd = '정수기'",
+    "answer": "전체 고객 중 60%가 정수기를 사용 중이에요."
+  },
+  {
+    "sql": "SELECT COUNT(*) FROM customer WHERE prdtCd != '공기청정기'",
+    "answer": "공기청정기를 사용하지 않는 고객은 총 1,100명이에요."
+  }
