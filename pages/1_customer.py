@@ -169,16 +169,19 @@ st.markdown(
     "<p style='font-size: 13px; color: gray;'>질문은 아래 버튼을 참고하세요.</p>",
     unsafe_allow_html=True
 )
-# 예시 질문 목록 
-question_examples = ["25살이 쓸 만한 제품을 추천해주세요. 용량은 4인분이 좋겠어요 렌탈료는 2만원 정도에요 할인은 5%정도구요 만족도는 80점 이상이면 좋겠어요 ",
-                    "7명 정도가 사용할 제품을 추천해주세요. 나이는 45살이고 렌탈료는 4만원이 좋겠어요. 할인율은 7%정도, 용량은 14인분이에요. 제품을 구매한 사람의 만족도가 85점 정도면 좋겠어요"]
+# --------------------------------------------------------------------------------
+# 예시 질문을 보여주는 확장 가능한 영역을 만듭니다.
+with st.expander("질문 예시", expanded=False): #예시 질문을 보여주는 확장 가능한 영역을 만듭니다.
+    # 예시 질문 목록 
+    question_examples = [
+       "7명 정도가 사용할 제품을 추천해주세요. 나이는 45살이고 렌탈료는 4만원이 좋겠어요. 할인율은 7%정도, 용량은 14인분이에요. 제품을 구매한 사람의 만족도가 85점 정도면 좋겠어요",
+        "25살이 쓸 만한 제품을 추천해주세요. 용량은 4인분이 좋겠어요 렌탈료는 2만원 정도에요 할인은 5%정도구요 만족도는 80점 이상이면 좋겠어요 ",
+                        ]
+    for i, example in enumerate(question_examples):
+        if st.button(example, key=f"example_{i}"): # 예시 질문 버튼을 클릭하면 입력창에 예시 질문을 넣습니다.
+            input_text = example        
 
-# 예시 질문 버튼을 생성합니다.
-for i, example in enumerate(question_examples):
-    if st.button(example, key=f"example_{i}"): # 예시 질문 버튼을 클릭하면 입력창에 예시 질문을 넣습니다.
-        input_text = example
-        
-
+# --------------------------------------------------------------------------------
 if input_text: #run the code in this if block after the user submits a chat message
   chat.chat_with_model(message_history=st.session_state[CHAT_KEY], new_text=input_text)
 
