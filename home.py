@@ -16,6 +16,16 @@ img_base64_customer = img_to_base64("./img/customer.png")
 # CSS 스타일 정의
 st.markdown(f"""
     <style>
+    div.stButton > button {{
+        font-size: 32px;  /* 글씨 크기 증가 */
+        padding: 48px 120px;  /* 2em 5em을 px로 변환 */
+        height: 96px;  /* 4em을 px로 변환 */
+        width: 100%;
+        background-color: #F58D21;
+        color: white;
+        border-radius: 12px;
+        white-space: nowrap;
+    }}
     .header0 {{
         position: fixed;
         top: 0;
@@ -82,14 +92,13 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-col1, col2, col3, col4, col5 = st.columns(5)
+col1, col2, col3, col4, col5 = st.columns([1, 1, 2, 1, 3.5])
+
 
 with col2:
     if st.button("고객용"):
-        st.switch_page("pages/1_customer.py")  # customer 페이지로 이동
+        st.switch_page("pages/1_customer.py")  # 고객 페이지로 이동
 
 with col4:
     if st.button("직원용"):
-        st.switch_page("pages/2_employee.py")  # employee 페이지로 이동
-
-
+        st.switch_page("pages/2_employee.py")  # 직원 페이지로 이동
