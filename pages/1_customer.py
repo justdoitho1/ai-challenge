@@ -146,7 +146,12 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+
 CHAT_KEY = "chat_history_customer"
+PENDING_KEY = "response_pending"
+
+if PENDING_KEY not in st.session_state:
+    st.session_state[PENDING_KEY] = False
 
 if CHAT_KEY not in st.session_state: #채팅 기록이 아직 생성되지 않았는지 확인합니다.
     st.session_state[CHAT_KEY] = [] #채팅 기록 초기화
@@ -166,9 +171,14 @@ with col2:
 
 
 st.markdown(
+    "<p style='font-size: 13px; color: gray;'>질문 키워드 : 나이 | 용량 | 렌탈료 | 만족도</p>",
+    unsafe_allow_html=True
+)
+st.markdown(
     "<p style='font-size: 13px; color: gray;'>질문은 아래 버튼을 참고하세요.</p>",
     unsafe_allow_html=True
 )
+
 # --------------------------------------------------------------------------------
 # 예시 질문을 보여주는 확장 가능한 영역을 만듭니다.
 with st.expander("질문 예시", expanded=False): #예시 질문을 보여주는 확장 가능한 영역을 만듭니다.
@@ -176,19 +186,48 @@ with st.expander("질문 예시", expanded=False): #예시 질문을 보여주�
     question_examples = [
        "7명 정도가 사용할 제품을 추천해주세요. 나이는 45살이고 렌탈료는 4만원이 좋겠어요. 할인율은 7%정도, 용량은 14인분이에요. 제품을 구매한 사람의 만족도가 85점 정도면 좋겠어요",
         "25살이 쓸 만한 제품을 추천해주세요. 용량은 4인분이 좋겠어요 렌탈료는 2만원 정도에요 할인은 5%정도구요 만족도는 80점 이상이면 좋겠어요 ",
+        "30살이 쓸 만한 제품을 추천해주세요. 3인분 정도의 싱글용 식기세척기를 원하고 렌탈료는 2만원 정도가 좋겠어요. 만족도는 80점 이상이면 좋겠어요.",
                         ]
     for i, example in enumerate(question_examples):
         if st.button(example, key=f"example_{i}"): # 예시 질문 버튼을 클릭하면 입력창에 예시 질문을 넣습니다.
             input_text = example        
 
-# --------------------------------------------------------------------------------
-if input_text: #run the code in this if block after the user submits a chat message
-  chat.chat_with_model(message_history=st.session_state[CHAT_KEY], new_text=input_text)
 
+
+# --------------------------------------------------------------------------------
+
+# 1️⃣ 유저 메시지 즉시 추가 + rerun
+if input_text and not st.session_state[PENDING_KEY]:
+    st.session_state[CHAT_KEY].append(chat.ChatMessage(role="user", message_type="text", text=input_text))
+    st.session_state[PENDING_KEY] = True
+    st.rerun()
+
+# 2️⃣ 응답이 없고, 마지막 메시지가 user면 → AI 호출
+if st.session_state[PENDING_KEY]:
+    # 최근 메시지 인덱스
+    last_index = len(st.session_state[CHAT_KEY]) - 1
+    last_msg = st.session_state[CHAT_KEY][last_index]
+
+    # 💡 조건: 마지막 메시지가 유저이고, 그 뒤에 아직 assistant 메시지가 안 붙었을 때만 실행
+    if last_msg.role == "user" and (
+        last_index == len(st.session_state[CHAT_KEY]) - 1 or
+        (last_index + 1 < len(st.session_state[CHAT_KEY]) and st.session_state[CHAT_KEY][last_index + 1].role != "assistant")
+    ):
+        with st.spinner("달샘이가 답변 중이에요..."):
+            result = chat.chat_with_model(
+                message_history=st.session_state[CHAT_KEY],
+                new_text=last_msg.text
+            )
+
+        st.session_state[PENDING_KEY] = False
+        st.rerun()
+
+# --------------------------------------------------------------------------------
 
 avatar_data_url = f"data:image/png;base64,{img_base64_customer}"
 avatar_data_url2 = f"data:image/png;base64,{img_base64_dalsam}"
 
+# --------------------------------------------------------------------------------
 
 #채팅 기록 다시 렌더링(Streamlit은 이 스크립트를 다시 실행하므로 이전 채팅 메시지를 보존하려면 이 기능이 필요합니다.)
 for message in st.session_state[CHAT_KEY]: #채팅 기록을 반복합니다.
@@ -201,5 +240,6 @@ for message in st.session_state[CHAT_KEY]: #채팅 기록을 반복합니다.
         st.markdown(f'<div class="assistant-bubble">{message.text}</div>', unsafe_allow_html=True)
       elif message.message_type == "image" and message.bytesio:
         st.image(message.bytesio, caption="제품 이미지")
+      
       
 

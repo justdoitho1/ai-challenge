@@ -164,6 +164,10 @@ st.markdown(
 )
 
 CHAT_KEY = "chat_history_employee"
+PENDING_KEY = "response_pending"
+
+if PENDING_KEY not in st.session_state:
+    st.session_state[PENDING_KEY] = False
 
 if CHAT_KEY not in st.session_state: #채팅 기록이 아직 생성되지 않았는지 확인합니다.
     st.session_state[CHAT_KEY] = [] #채팅 기록 초기화
@@ -198,7 +202,7 @@ with st.expander("포로모션 시나리오", expanded=False): #예시 질문을
                         ]
     # 예시 질문 버튼을 생성합니다.
     st.markdown(
-       "<p style='font-size: 14px; font-weight: bold; color: #f7470c;'>무더위가 기승이 요즘 얼음 정수기가 필요하다! 우리 프로모션을 진행해볼까요?</p>",
+       "<p style='font-size: 14px; font-weight: bold; color: #f7470c;'>무더위가 기승인 요즘 얼음 정수기가 필요하다! 우리 프로모션을 진행해볼까요?</p>",
         unsafe_allow_html=True
         ) 
     for i, example in enumerate(question_examples):
@@ -232,10 +236,30 @@ with st.expander("질문 예시", expanded=False): #예시 질문을 보여주�
 
 
 # --------------------------------------------------------------------------------
-if input_text: #run the code in this if block after the user submits a chat message
-  chat_sql.chat_with_sql(message_history=st.session_state[CHAT_KEY], new_text=input_text)
-  
+# 1️⃣ 유저 메시지 즉시 추가 + rerun
+if input_text and not st.session_state[PENDING_KEY]:
+    st.session_state[CHAT_KEY].append(chat_sql.ChatMessage(role="user", message_type="text", text=input_text))
+    st.session_state[PENDING_KEY] = True
+    st.rerun()
 
+# 2️⃣ 응답이 없고, 마지막 메시지가 user면 → AI 호출
+if st.session_state[PENDING_KEY]:
+    # 최근 메시지 인덱스
+    last_index = len(st.session_state[CHAT_KEY]) - 1
+    last_msg = st.session_state[CHAT_KEY][last_index]
+
+    # 💡 조건: 마지막 메시지가 유저이고, 그 뒤에 아직 assistant 메시지가 안 붙었을 때만 실행
+    if last_msg.role == "user" and (
+        last_index == len(st.session_state[CHAT_KEY]) - 1 or
+        (last_index + 1 < len(st.session_state[CHAT_KEY]) and st.session_state[CHAT_KEY][last_index + 1].role != "assistant")
+    ):
+        with st.spinner("달샘이가 답변 중이에요..."):
+            result = chat_sql.chat_with_sql(message_history=st.session_state[CHAT_KEY], new_text=last_msg.text)
+
+        st.session_state[PENDING_KEY] = False
+        st.rerun()
+
+# --------------------------------------------------------------------------------
 avatar_data_url = f"data:image/png;base64,{img_base64_employee}"
 avatar_data_url2 = f"data:image/png;base64,{img_base64_dalsam}"
 
